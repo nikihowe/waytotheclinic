@@ -6,25 +6,11 @@ public class Vertex {
     private Set<Vertex> adjacentVertices;
     private int x;
     private int y;
-    private boolean marked;
 
     public Vertex(int x, int y) {
         this.name = "(" + x + "," + y + ")";
         this.x = x;
         this.y = y;
-        this.marked = false;
-    }
-
-    public boolean isMarked() {
-        return marked;
-    }
-
-    public void mark() {
-        this.marked = true;
-    }
-
-    public void unMark() {
-        this.marked = false;
     }
 
     public int getX() {

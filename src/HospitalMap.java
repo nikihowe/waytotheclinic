@@ -19,11 +19,12 @@ public class HospitalMap {
     }
 
     public static void main(String[] args) throws IOException {
-        HospitalMap myHosMap = new HospitalMap("Levels/Level3Lines.png");
+        HospitalMap myHosMap = new HospitalMap("Levels/Level3LinesBW.png");
         System.out.println("building graph");
         myHosMap.buildGraph();
         System.out.println("done");
-        myHosMap.vertexArray.printVertices();
+        //myHosMap.vertexArray.printVertices();
+//        List<Vertex> path = myHosMap.vertexArray.getPath(0, 0, 7, 7);
         List<Vertex> path = myHosMap.vertexArray.getPath(143, 630, 1544, 402);
         for (Vertex i : path) {
             System.out.println(i);
@@ -36,8 +37,7 @@ public class HospitalMap {
     }
 
     private BufferedImage loadMapFromSource(String imageLocation) throws IOException {
-        BufferedImage myImage = javax.imageio.ImageIO.read(new File(imageLocation));
-        return myImage;
+        return javax.imageio.ImageIO.read(new File(imageLocation));
     }
 
     public int getHeight() {
