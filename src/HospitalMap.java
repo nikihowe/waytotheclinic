@@ -19,13 +19,14 @@ public class HospitalMap {
     }
 
     public static void main(String[] args) throws IOException {
-        HospitalMap myHosMap = new HospitalMap("Levels/Level3LinesBW.png");
+//        HospitalMap myHosMap = new HospitalMap("Levels/Level3LinesBW.png");
+        HospitalMap myHosMap = new HospitalMap("Levels/eight.png");
         System.out.println("building graph");
         myHosMap.buildGraph();
         System.out.println("done");
         //myHosMap.vertexArray.printVertices();
-//        List<Vertex> path = myHosMap.vertexArray.getPath(0, 0, 7, 7);
-        List<Vertex> path = myHosMap.vertexArray.getPath(143, 630, 1544, 402);
+        List<Vertex> path = myHosMap.vertexArray.getPath(0, 0, 7, 7);
+//        List<Vertex> path = myHosMap.vertexArray.getPath(143, 630, 1544, 402);
         for (Vertex i : path) {
             System.out.println(i);
         }
