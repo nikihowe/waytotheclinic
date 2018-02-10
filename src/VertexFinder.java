@@ -122,41 +122,47 @@ public class VertexFinder {
             int y = v.getY();
 
             for (int b = 0; b < dir.length; b++) {
-                int i = 0;
-
-                while (isFilled(x + dir[b][0] * (i+1), y + dir[b][1] * (i+1))) i++;
+                int i = 1;
 
                 int checkX = x + dir[b][0] * i;
                 int checkY = y + dir[b][1] * i;
-
                 Vertex checkV = new Vertex(checkX, checkY);
 
-                if (i > 0) {
-                    assert(!v.samePlaceAs(checkV));
-                    assert(adjList.containsKey(checkV));
-                    if (i > 3) {
-                        adjList.get(v).add(new Edge(v, checkV, i, angles[b]));
-                    } else {
-                        if (!manualCheck.contains(checkV)) {
-                            manualCheck.add(checkV);
+                // doesn't check last vertex
+                while (isFilled(checkX, checkY)) {
+                    if (adjList.containsKey(checkV)) {
+                        assert (!v.samePlaceAs(checkV));
+                        assert (adjList.containsKey(checkV));
+                        assert (isFilled(checkX, checkY));
+                        if (i > 3) {
+                            adjList.get(v).add(new Edge(v, checkV, i, angles[b]));
+                        } else {
+                            if (!manualCheck.contains(checkV)) {
+                                manualCheck.add(checkV);
 
-                            if (!removeAll) {
-                                System.out.format("\nYou might have a non horizontal/vertical edge near (%d, %d)\n"
-                                        , checkX, checkY);
-                                System.out.print("Remove? Y/n/all: ");
-                                JFrame frame = showCropped(checkX, checkY, 80, 80, LINE);
+                                if (!removeAll) {
+                                    System.out.format("\nYou might have a non horizontal/vertical edge near (%d, %d)\n"
+                                            , checkX, checkY);
+                                    System.out.print("Remove? Y/n/all: ");
+                                    JFrame frame = showCropped(checkX, checkY, 80, 80, LINE);
 
-                                String res = stdin.nextLine();
+                                    String res = stdin.nextLine();
 
-                                if (res.toLowerCase().equals("all")) removeAll = true;
-                                if (!res.toLowerCase().equals("n")) toRemove.add(checkV);
-                                frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
-                            } else {
-                                toRemove.add(checkV);
+                                    if (res.toLowerCase().equals("all")) removeAll = true;
+                                    if (!res.toLowerCase().equals("n")) toRemove.add(checkV);
+                                    frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
+                                } else {
+                                    toRemove.add(checkV);
+                                }
+
                             }
-
                         }
                     }
+
+                    i++;
+                    checkX = x + dir[b][0] * i;
+                    checkY = y + dir[b][1] * i;
+                    checkV = new Vertex(checkX, checkY);
                 }
             }
         }
@@ -188,27 +194,46 @@ public class VertexFinder {
                     v.addLabel(label);
                 }
             }
-
         }
 
+        printResult(vertexSet, adjList);
+
+        System.out.println("Saving results");
+
+        ObjectOutputStream oos1 = new ObjectOutputStream(
+                new BufferedOutputStream(new FileOutputStream("vertexSet.ser")));
+        ObjectOutputStream oos2 = new ObjectOutputStream(
+                new BufferedOutputStream(new FileOutputStream("adjList.ser")));
+
+        oos1.writeObject(vertexSet);
+        oos2.writeObject(adjList);
+
+        oos1.flush();
+        oos2.flush();
+
+        System.out.println("Done");
+    }
+
+    private static void printResult(HashSet<Vertex> vertexSet, HashMap<Vertex, HashSet<Edge>> adjList) {
         System.out.println("Vertices: ");
         for (Vertex v : vertexSet) {
-            System.out.format("(%d, %d)\n", v.getX(), v.getY());
+            System.out.println(v);
             System.out.println("Intersection: " + v.isIntersection());
-            System.out.println("Labels: " + v.printLabels());
+            System.out.println("Labels: " + v.getLabels());
             System.out.println("# Edges: " + adjList.get(v).size());
+
+            assert(adjList.get(v).size() > 0);
+
             System.out.println();
         }
 
-        for (HashSet<Edge> edges : adjList.values()) {
-            for (Edge e : edges) {
-                System.out.println(e);
+        if (adjList != null) {
+            for (HashSet<Edge> edges : adjList.values()) {
+                for (Edge e : edges) {
+                    System.out.println(e);
+                }
             }
         }
-
-
-
-
     }
 
     public static boolean isFilled(int x, int y) {

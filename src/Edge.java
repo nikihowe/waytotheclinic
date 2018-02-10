@@ -3,7 +3,7 @@ import java.util.ArrayList;
 
 public class Edge implements Serializable {
 
-//    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
     private Vertex in;
     private Vertex out;
@@ -28,10 +28,10 @@ public class Edge implements Serializable {
     @Override
     public String toString() {
         String str = "";
-        str +=  "In Vertex : " + in.getX() + " " + in.getY() + "\n";
-        str +=  "Out Vertex : " + out.getX() + " " + out.getY() + "\n";
-        str += "Cost: " + cost + "\n";
-        str += "Angle: " + angle;
+        str +=  "In Vertex : " + in.toString() + "\n";
+        str +=  "Out Vertex : " + out.toString() + "\n";
+        str +=  "Cost: " + cost + "\n";
+        str +=  "Angle: " + angle;
 
         return str;
     }

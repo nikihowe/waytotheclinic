@@ -4,9 +4,8 @@ import java.util.Set;
 
 public class Vertex implements Serializable {
 
-//    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-    private String name;
     private Set<Vertex> adjacentVertices;
     private int x;
     private int y;
@@ -17,7 +16,6 @@ public class Vertex implements Serializable {
 
 
     public Vertex(int x, int y) {
-        this.name = "(" + x + "," + y + ")";
         this.x = x;
         this.y = y;
         labels = new ArrayList<>();
@@ -41,11 +39,16 @@ public class Vertex implements Serializable {
     }
 
 
+    @Override
+    public String toString() {
+        String str = labels.size() > 0 ? "[" + labels.get(0) + "] " : "";
+        return str + "(" + getX() + ", " + getY() + ")";
+
+    }
+
     public int getX() { return x; }
 
     public int getY() { return y; }
-
-    public String toString() { return this.name; }
 
     public void printAdjacent() {
         for (Vertex vert : this.adjacentVertices) {
@@ -56,8 +59,6 @@ public class Vertex implements Serializable {
     public Set<Vertex> getAdjacentVertices() {
         return this.adjacentVertices;
     }
-
-    public String getName() { return name; }
 
     public void setAdjacentVertices(Set<Vertex> inputVertices) {
         this.adjacentVertices = inputVertices;
@@ -73,7 +74,7 @@ public class Vertex implements Serializable {
 
     public void addLabel(String label) { labels.add(label); }
 
-    public String printLabels() {
+    public String getLabels() {
         String str = "";
         for (String label : labels) {
             str += " " + label;
