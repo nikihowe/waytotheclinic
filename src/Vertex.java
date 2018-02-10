@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Set;
 
 public class Vertex {
@@ -6,12 +7,31 @@ public class Vertex {
     private Set<Vertex> adjacentVertices;
     private int x;
     private int y;
+    private boolean intersection = false;
+    private ArrayList<String> labels;
 
     public Vertex(int x, int y) {
         this.name = "(" + x + "," + y + ")";
         this.x = x;
         this.y = y;
+        this.labels = new ArrayList<>();
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Vertex)) return false;
+        Vertex key = (Vertex) o;
+        return x == key.x && y == key.y;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = x;
+        result = 31 * result + y;
+        return result;
+    }
+
 
     public int getX() {
         return x;
@@ -45,5 +65,26 @@ public class Vertex {
 
     public boolean samePlaceAs(Vertex other) {
         return x == other.getX() && y == other.getY();
+    }
+
+    public void setIntersection() {
+        intersection = true;
+    }
+
+    public boolean isIntersection() {
+        return intersection;
+    }
+
+    public void addLabel(String label) {
+        labels.add(label);
+    }
+
+    public String printLabels() {
+        String str = "";
+        for (String label : labels) {
+            str += " " + label;
+        }
+
+        return str;
     }
 }
