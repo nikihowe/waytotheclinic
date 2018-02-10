@@ -1,7 +1,10 @@
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Set;
 
-public class Vertex {
+public class Vertex implements Serializable {
+
+//    private static final long serialVersionUID = 1L;
 
     private String name;
     private Set<Vertex> adjacentVertices;
@@ -9,12 +12,17 @@ public class Vertex {
     private int y;
     private boolean intersection = false;
     private ArrayList<String> labels;
+    private ArrayList<Edge> inEdges;
+    private ArrayList<Edge> outEdges;
+
 
     public Vertex(int x, int y) {
         this.name = "(" + x + "," + y + ")";
         this.x = x;
         this.y = y;
-        this.labels = new ArrayList<>();
+        labels = new ArrayList<>();
+        inEdges = new ArrayList<>();
+        outEdges = new ArrayList<>();
     }
 
     @Override
@@ -33,17 +41,11 @@ public class Vertex {
     }
 
 
-    public int getX() {
-        return x;
-    }
+    public int getX() { return x; }
 
-    public int getY() {
-        return y;
-    }
+    public int getY() { return y; }
 
-    public String toString() {
-        return this.name;
-    }
+    public String toString() { return this.name; }
 
     public void printAdjacent() {
         for (Vertex vert : this.adjacentVertices) {
@@ -55,9 +57,7 @@ public class Vertex {
         return this.adjacentVertices;
     }
 
-    public String getName() {
-        return name;
-    }
+    public String getName() { return name; }
 
     public void setAdjacentVertices(Set<Vertex> inputVertices) {
         this.adjacentVertices = inputVertices;
@@ -67,17 +67,11 @@ public class Vertex {
         return x == other.getX() && y == other.getY();
     }
 
-    public void setIntersection() {
-        intersection = true;
-    }
+    public void setIntersection() { intersection = true;  }
 
-    public boolean isIntersection() {
-        return intersection;
-    }
+    public boolean isIntersection() { return intersection; }
 
-    public void addLabel(String label) {
-        labels.add(label);
-    }
+    public void addLabel(String label) { labels.add(label); }
 
     public String printLabels() {
         String str = "";
@@ -87,4 +81,8 @@ public class Vertex {
 
         return str;
     }
+
+    public void addInEdge(Edge e) { inEdges.add(e); }
+
+    public void addOutEdge(Edge e) { outEdges.add(e); }
 }

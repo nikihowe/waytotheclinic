@@ -7,7 +7,6 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.*;
 
-import static java.lang.Math.PI;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 
@@ -116,6 +115,7 @@ public class VertexFinder {
         }
 
         int[][] dir = new int[][]{ {1, 0}, {0, 1}, {-1, 0}, {0, -1} };
+        double[] angles = new double[] { 180, 90, 0, 270 };
 
         for (Vertex v : vertexSet) {
             int x = v.getX();
@@ -134,9 +134,8 @@ public class VertexFinder {
                 if (i > 0) {
                     assert(!v.samePlaceAs(checkV));
                     assert(adjList.containsKey(checkV));
-                    if (i > 1) {
-                        adjList.get(checkV).add(new Edge(checkV, v, i));
-                        adjList.get(v).add(new Edge(v, checkV, i));
+                    if (i > 3) {
+                        adjList.get(v).add(new Edge(v, checkV, i, angles[b]));
                     } else {
                         if (!manualCheck.contains(checkV)) {
                             manualCheck.add(checkV);
@@ -199,6 +198,12 @@ public class VertexFinder {
             System.out.println("Labels: " + v.printLabels());
             System.out.println("# Edges: " + adjList.get(v).size());
             System.out.println();
+        }
+
+        for (HashSet<Edge> edges : adjList.values()) {
+            for (Edge e : edges) {
+                System.out.println(e);
+            }
         }
 
 
