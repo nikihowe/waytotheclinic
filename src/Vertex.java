@@ -1,7 +1,8 @@
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Set;
 
-public class Vertex {
+public class Vertex implements Serializable {
 
     private String name;
     private Set<Vertex> adjacentVertices;
@@ -31,7 +32,6 @@ public class Vertex {
         result = 31 * result + y;
         return result;
     }
-
 
     public int getX() {
         return x;

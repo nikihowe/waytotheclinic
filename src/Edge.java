@@ -1,6 +1,6 @@
-import java.util.ArrayList;
+import java.io.Serializable;
 
-public class Edge {
+public class Edge implements Serializable {
     private Vertex in;
     private Vertex out;
     private int cost;
