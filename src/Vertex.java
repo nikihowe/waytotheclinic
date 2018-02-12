@@ -38,7 +38,6 @@ public class Vertex implements Serializable {
         return result;
     }
 
-
     @Override
     public String toString() {
         String str = labels.size() > 0 ? "[" + labels.get(0) + "] " : "";
