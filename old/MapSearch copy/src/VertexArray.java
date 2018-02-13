@@ -1,31 +1,27 @@
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.List;
-import java.util.ArrayList;
-import javafx.util.Pair;
+import java.util.*;
 
 public class VertexArray {
 
     private Vertex[][] intVertexArray;
-    private Map<Pair<Integer, Integer>, Vertex> vertexMap;
     private int width;
     private int height;
     private BufferedImage image;
-    private int z = 2;
 
     public VertexArray(BufferedImage theImage) throws IOException {
         // Load a vertex in for each pixel in the map.
-        this.image = theImage;
+        this.intVertexArray = loadVertexList(theImage);
         this.width = theImage.getWidth();
         this.height = theImage.getHeight();
-        System.out.println("loading image map");
-        this.vertexMap = loadVertexMap(theImage);
-        System.out.println("loaded");
+        this.image = theImage;
+
+        loadVertexList(theImage);
         getAllAdjacentVertices();
+    }
+
+    public Vertex getVertex(int x, int y) {
+        return intVertexArray[x][y];
     }
 
     private Vertex[][] loadVertexList(BufferedImage lines) {
@@ -34,26 +30,7 @@ public class VertexArray {
         // Getting pixel color by position x and y
         for (int x = 0; x < lines.getWidth(); x++) {
             for (int y = 0; y < lines.getHeight(); y++) {
-                if (isBlack(x, y, image)) {
-                    toReturn[x][y] = new Vertex(x, y, z);
-                }
-            }
-        }
-        return toReturn;
-    }
-
-    private Map<Pair<Integer, Integer>, Vertex> loadVertexMap(BufferedImage lines) {
-
-        HashMap<Pair<Integer, Integer>, Vertex> toReturn = new HashMap<>();
-
-        // Getting pixel color by position x and y
-        for (int x = 0; x < lines.getWidth(); x++) {
-            for (int y = 0; y < lines.getHeight(); y++) {
-                if (isBlack(x, y, image)) {
-//                    System.out.println(image.getRGB(x, y));
-                    toReturn.put(new Pair<>(x, y), new Vertex(x, y, z));
-//                    System.out.println("(" + x + "," + y + ")");
-                }
+                toReturn[x][y] = new Vertex(x, y);
             }
         }
         return toReturn;
@@ -63,19 +40,15 @@ public class VertexArray {
         return (0 <= x && x < picture.getWidth() && 0 <= y && y < picture.getHeight());
     }
 
-    public void getAllAdjacentVertices() throws NullPointerException {
+    public void getAllAdjacentVertices() {
         for (int i = 0; i < this.width; i++) {
             for (int j = 0; j < this.height; j++) {
-                if (isBlack(i, j, image)) {
-                    Vertex v = vertexMap.get(new Pair<>(i, j));
-                    v.setAdjacentVertices(getAdjacentVertices(i, j));
-                }
+                intVertexArray[i][j].setAdjacentVertices(getAdjacentVertices(i, j));
             }
         }
     }
 
-    // Assumes if vertex is black, then it will exist
-    private Set<Vertex> getAdjacentVertices(int x, int y) throws NullPointerException {
+    private Set<Vertex> getAdjacentVertices(int x, int y) {
         Set<Vertex> toReturn  = new HashSet<>();
         //System.out.println("rgb value of " + x + "," + y + " is " + (image.getRGB(x, y) & 0xFF0000));
         if (isBlack(x, y, image)) {
@@ -83,8 +56,7 @@ public class VertexArray {
                 for (int j = y - 1; j <= y + 1; j++) {
                     if (x != i || y != j) {
                         if (inRange(i, j, image) && isBlack(i, j, image)) {
-                            toReturn.add(vertexMap.get(new Pair<>(i, j)));
-//                            toReturn.add(intVertexArray[i][j]);
+                            toReturn.add(intVertexArray[i][j]);
                         }
                     }
                 }
@@ -93,22 +65,19 @@ public class VertexArray {
         return toReturn;
     }
 
-    private boolean isBlack(int x, int y, BufferedImage image) {
-//        System.out.println("checking black " + x + " " + y);
-//        System.out.println("value: " + image.getRGB(x, y));
-        return (image.getRGB(x, y) & 0xFF0000) == 0;
+    public boolean isBlack(int x, int y, BufferedImage image) {
+        return (this.image.getRGB(x, y) & 0xFF0000) == 0;
     }
 
-//    public void printVertices() {
-//        for (int i = 0; i < this.width; i++) {
-//            for (int j = 0; j < this.height; j++) {
+    public void printVertices() {
+        for (int i = 0; i < this.width; i++) {
+            for (int j = 0; j < this.height; j++) {
 //                System.out.println("position: " + i + " " + j);
 //                System.out.println("adjacent vertices:");
-//                Vertex v = vertexMap.get(new Pair<>(i, j));
 //                intVertexArray[i][j].printAdjacent();
-//            }
-//        }
-//    }
+            }
+        }
+    }
 
     public void checkBlack() {
         for (int i = 0; i < this.width; i++) {
@@ -133,13 +102,12 @@ public class VertexArray {
         gScore.put(start, 0);
 
         HashMap<Vertex, Integer> fScore = new HashMap<>();
-        System.out.println("start: " + start + " end: " + end);
         fScore.put(start, manhattanDistance(start, end));
 
         while (!openSet.isEmpty()) {
             // From Wikipedia
             Vertex current = pickBestNext(openSet, fScore);
-//            System.out.println("next best: " + current);
+            System.out.println("next best: " + current);
 
             if (current.samePlaceAs(end)) {
                 return reconstructPath(cameFrom, current);
@@ -192,9 +160,17 @@ public class VertexArray {
     }
 
     public List<Vertex> getPath(int x, int y, int xx, int yy) {
-        Vertex start = vertexMap.get(new Pair<>(x, y));
-        Vertex end = vertexMap.get(new Pair<>(xx, yy));
+        Vertex start = getVertex(x, y);
+        Vertex end = getVertex(xx, yy);
         return getPath(start, end);
+    }
+
+    public void unmarkAll() {
+        for (int i = 0; i < this.width; i++) {
+            for (int j = 0; j < this.height; j++) {
+                intVertexArray[i][j].unMark();
+            }
+        }
     }
 
     public static int manhattanDistance(Vertex start, Vertex end) {

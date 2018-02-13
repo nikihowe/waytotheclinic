@@ -9,15 +9,17 @@ public class Vertex implements Serializable {
     private Set<Vertex> adjacentVertices;
     private int x;
     private int y;
+    private int z; // which level we're on
     private boolean intersection = false;
     private ArrayList<String> labels;
     private ArrayList<Edge> inEdges;
     private ArrayList<Edge> outEdges;
 
 
-    public Vertex(int x, int y) {
+    public Vertex(int x, int y, int z) {
         this.x = x;
         this.y = y;
+        this.z = z;
         labels = new ArrayList<>();
         inEdges = new ArrayList<>();
         outEdges = new ArrayList<>();
@@ -28,7 +30,7 @@ public class Vertex implements Serializable {
         if (this == o) return true;
         if (!(o instanceof Vertex)) return false;
         Vertex key = (Vertex) o;
-        return x == key.x && y == key.y;
+        return x == key.x && y == key.y && z == key.z;
     }
 
     @Override
@@ -41,13 +43,15 @@ public class Vertex implements Serializable {
     @Override
     public String toString() {
         String str = labels.size() > 0 ? "[" + labels.get(0) + "] " : "";
-        return str + "(" + getX() + ", " + getY() + ")";
+        return str + "(" + getX() + ", " + getY() + ", " + getZ() + ")";
 
     }
 
     public int getX() { return x; }
 
     public int getY() { return y; }
+
+    public int getZ() { return z; }
 
     public void printAdjacent() {
         for (Vertex vert : this.adjacentVertices) {
@@ -64,7 +68,7 @@ public class Vertex implements Serializable {
     }
 
     public boolean samePlaceAs(Vertex other) {
-        return x == other.getX() && y == other.getY();
+        return x == other.getX() && y == other.getY() && z == other.getZ();
     }
 
     public void setIntersection() { intersection = true;  }
