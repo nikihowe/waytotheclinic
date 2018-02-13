@@ -35,4 +35,12 @@ public class Edge implements Serializable {
 
         return str;
     }
+
+    public int getCost() { return cost; }
+
+    public double getAngle() { return angle; }
+
+    public Vertex getInVertex() { return in; }
+
+    public Vertex getOutVertex() { return out; }
 }

@@ -73,16 +73,13 @@ public class Vertex implements Serializable {
 
     public void addLabel(String label) { labels.add(label); }
 
-    public String getLabels() {
-        String str = "";
-        for (String label : labels) {
-            str += " " + label;
-        }
-
-        return str;
+    public ArrayList<String> getLabels() {
+        return (ArrayList<String>) labels.clone();
     }
 
     public void addInEdge(Edge e) { inEdges.add(e); }
 
     public void addOutEdge(Edge e) { outEdges.add(e); }
+
+    public ArrayList<Edge> getOutEdges() { return outEdges; }
 }
