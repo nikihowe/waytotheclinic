@@ -1,4 +1,4 @@
-//import com.intellij.util.ui.UIUtil;
+import com.intellij.util.ui.UIUtil;
 
 import javax.swing.*;
 import java.awt.*;
@@ -59,8 +59,8 @@ public class VertexFinder {
     }
 
     public static final BufferedImage deepCopy(BufferedImage image) {
-//        BufferedImage clone = UIUtil.createImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_ARGB);
-        BufferedImage clone = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        BufferedImage clone = UIUtil.createImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_ARGB);
+//        BufferedImage clone = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2d = clone.createGraphics();
         g2d.drawImage(image, 0, 0, null);
         g2d.dispose();
@@ -107,7 +107,7 @@ public class VertexFinder {
                         // is vertex
                         Vertex v = new Vertex(i, j);
                         vertexSet.add(v);
-                        adjList.put(v, new HashSet<>());
+                        adjList.put(v, new HashSet<Edge>());
                         cnt++;
                     }
 
