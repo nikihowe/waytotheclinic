@@ -133,10 +133,10 @@ public class VertexFinder {
             }
         }
 
-        for (Vertex v : vertexSet) {
-            int col = lineImage.getRGB(v.getX(), v.getY());
-            System.out.println("Vertex: " + v + " has colour " + RoomType.getColour(col));
-        }
+//        for (Vertex v : vertexSet) {
+//            int col = lineImage.getRGB(v.getX(), v.getY());
+//            System.out.println("Vertex: " + v + " has colour " + RoomType.getColour(col));
+//        }
 
         int[][] dir = new int[][]{ {1, 0}, {0, 1}, {-1, 0}, {0, -1} };
         double[] angles = new double[] { 180, 90, 0, 270 };
@@ -144,7 +144,7 @@ public class VertexFinder {
         for (Vertex v : vertexSet) {
             int x = v.getX();
             int y = v.getY();
-            System.out.println("looking at " + x + "," + y);
+//            System.out.println("looking at " + x + "," + y);
             // For each direction around the pixel, find the next edge to add
             for (int b = 0; b < dir.length; b++) { // for each direction
                 for (int i = 1; i < Integer.MAX_VALUE; i++) { // check until we hit a wall
@@ -163,9 +163,12 @@ public class VertexFinder {
                     int pixelColour = lineImage.getRGB(checkX, checkY);
                     // We want to add an edge to the pixel at this location
                     if (RoomType.notBW(pixelColour)) {
-                        Vertex w = coordinateMap.get(new Pair(x, y));
+                        Vertex w = coordinateMap.get(new Pair(checkX, checkY));
                         assert (!v.samePlaceAs(w));
+//                        System.out.println(v);
+//                        System.out.println(w);
                         adjList.get(v).add(new Edge(v, w, i, angles[b]));
+//                        System.out.println("Added: " + adjList.get(v));
                         break; // only get the first adjacent node
                     }
 //                    JFrame frame = showCropped(checkX, checkY, 80, 80, LINE);
@@ -179,11 +182,19 @@ public class VertexFinder {
         System.out.println("Number of Vertices: " + numVertices);
 
         System.out.println("Labelling... ");
+        boolean autofill = true;
+        int i = -1;
         for (Vertex v : vertexSet) {
+            i++;
             if (!RoomType.isGrey(lineImage.getRGB(v.getX(), v.getY()))) {
                 v.addLabel(roomColour.get(RoomType.getColour(lineImage.getRGB(v.getX(), v.getY()))));
-                System.out.println("vertex " + v);
+//                System.out.println("vertex " + v);
                 continue; // go to the next node
+            }
+
+            if (autofill) {
+                v.addLabel("" + i);
+                continue;
             }
 
             JFrame frame = showCropped(v.getX(), v.getY(), 200, 200, MAP);
@@ -201,11 +212,11 @@ public class VertexFinder {
                     v.addLabel(label);
                 }
             }
-            System.out.println("vertex " + v);
+//            System.out.println("vertex " + v);
             frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
         }
 
-        printResult(vertexSet, adjList);
+//        printResult(vertexSet, adjList);
 
         System.out.println("Saving results");
 
@@ -213,12 +224,16 @@ public class VertexFinder {
                 new BufferedOutputStream(new FileOutputStream("vertexSet2.ser")));
         ObjectOutputStream oos2 = new ObjectOutputStream(
                 new BufferedOutputStream(new FileOutputStream("adjList2.ser")));
+        ObjectOutputStream oos3 = new ObjectOutputStream(
+                new BufferedOutputStream(new FileOutputStream("coordMap2.ser")));
 
         oos1.writeObject(vertexSet);
         oos2.writeObject(adjList);
+        oos3.writeObject(coordinateMap);
 
         oos1.flush();
         oos2.flush();
+        oos3.flush();
 
         System.out.println("Done");
     }
