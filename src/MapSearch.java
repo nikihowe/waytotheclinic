@@ -30,14 +30,12 @@ public class MapSearch {
 //            }
 //        }
 
-
         Vertex start = coordMap.get(new Pair(73, 331));
         Vertex end = coordMap.get(new Pair(683, 166));
         List<Edge> path = getPath(start, end);
 
         /*
         ArrayList<Edge> path  = new ArrayList<>();
-
 
         // test for directions
         int[][] coords = {
@@ -61,7 +59,6 @@ public class MapSearch {
             }
         }
 
-
         assert(coords.length == path.size() + 1);
         System.out.println(path.size());
         System.out.println(coords.length);
@@ -74,7 +71,6 @@ public class MapSearch {
         for (String direction : directions) {
             System.out.println(direction);
         }
-
 
     }
 
