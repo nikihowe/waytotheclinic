@@ -1,6 +1,6 @@
-//import com.intellij.util.ui.UIUtil;
-
-import javafx.util.Pair;
+import com.intellij.util.ui.UIUtil;
+import kotlin.Pair;
+//import javafx.util.Pair;
 
 import javax.swing.*;
 import java.awt.*;
@@ -62,8 +62,8 @@ public class VertexFinder {
     }
 
     public static final BufferedImage deepCopy(BufferedImage image) {
-//        BufferedImage clone = UIUtil.createImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_ARGB);
-        BufferedImage clone = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        BufferedImage clone = UIUtil.createImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_ARGB);
+//        BufferedImage clone = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2d = clone.createGraphics();
         g2d.drawImage(image, 0, 0, null);
         g2d.dispose();
@@ -126,7 +126,7 @@ public class VertexFinder {
                         Vertex v = new Vertex(i, j, level);
                         vertexSet.add(v); // store in our set of vertices
                         coordinateMap.put(new Pair(i, j), v);
-                        adjList.put(v, new HashSet<>()); // make a new entry in our set of edges of this vertex
+                        adjList.put(v, new HashSet<Edge>()); // make a new entry in our set of edges of this vertex
                         numVertices++;
                     }
                 }
@@ -144,17 +144,13 @@ public class VertexFinder {
         for (Vertex v : vertexSet) {
             int x = v.getX();
             int y = v.getY();
-//            System.out.println("looking at " + x + "," + y);
+
             // For each direction around the pixel, find the next edge to add
             for (int b = 0; b < dir.length; b++) { // for each direction
                 for (int i = 1; i < Integer.MAX_VALUE; i++) { // check until we hit a wall
 
                     int checkX = x + dir[b][0] * i; // how far on x
                     int checkY = y + dir[b][1] * i; // how far on y (it'll only be one of these)
-
-//                    System.out.println("is " + checkX + "," + checkY + " adjacent?");
-//                    int col = lineImage.getRGB(checkX, checkY);
-//                    System.out.println("Vertex: " + checkX + "," + checkY + " has colour " + RoomType.getColour(col));
 
                     if (!isFilled(checkX, checkY)) {
                         break; // if we're not on a hall or node, stop searching in this direction
@@ -165,8 +161,6 @@ public class VertexFinder {
                     if (RoomType.notBW(pixelColour)) {
                         Vertex w = coordinateMap.get(new Pair(checkX, checkY));
                         assert (!v.samePlaceAs(w));
-//                        System.out.println(v);
-//                        System.out.println(w);
                         adjList.get(v).add(new Edge(v, w, i, angles[b]));
 //                        System.out.println("Added: " + adjList.get(v));
                         break; // only get the first adjacent node
@@ -188,7 +182,6 @@ public class VertexFinder {
             i++;
             if (!RoomType.isGrey(lineImage.getRGB(v.getX(), v.getY()))) {
                 v.addLabel(roomColour.get(RoomType.getColour(lineImage.getRGB(v.getX(), v.getY()))));
-//                System.out.println("vertex " + v);
                 continue; // go to the next node
             }
 
@@ -216,7 +209,7 @@ public class VertexFinder {
             frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
         }
 
-//        printResult(vertexSet, adjList);
+        printResult(vertexSet, adjList);
 
         System.out.println("Saving results");
 
