@@ -24,7 +24,6 @@ public class LongestCommonSubsequence<T> {
                 dp.add(newRow);
             }
 
-            // build base case on first row;
             for (int i = 0; i < s1.size(); i++) {
                 for (int j = 0; j < s2.size(); j++) {
 
@@ -41,9 +40,9 @@ public class LongestCommonSubsequence<T> {
 
                         if (i == 0 || j == 0) {
 
-                            if (i == 0) {
+                            if (j != 0) {
                                 dp.get(i).set(j, dp.get(i).get(j-1));
-                            } else {
+                            } else if (i != 0){
                                 dp.get(i).set(j, dp.get(i-1).get(j));
                             }
 
@@ -52,9 +51,7 @@ public class LongestCommonSubsequence<T> {
                             dp.get(i).set(j, prevLen);
                         }
                     }
-//                    System.out.print(dp.get(i).get(j));
                 }
-//                System.out.println("");
             }
 
             // find LCS itself
@@ -64,8 +61,6 @@ public class LongestCommonSubsequence<T> {
             int j = s2.size() - 1;
 
             int length = dp.get(i).get(j);
-
-            System.out.println(length);
 
             while (length != 0) {
                 // go left until impossible, then go up
