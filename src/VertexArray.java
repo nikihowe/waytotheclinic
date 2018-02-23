@@ -6,8 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
 import java.util.ArrayList;
-//import javafx.util.Pair;
-import kotlin.Pair;
+import javafx.util.Pair;
 
 public class VertexArray {
 
