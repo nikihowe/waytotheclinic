@@ -1,6 +1,6 @@
-//import javafx.util.Pair;
+import javafx.util.Pair;
 
-import kotlin.Pair;
+//import kotlin.Pair;
 
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
@@ -44,7 +44,6 @@ public class MapSearch {
         for (String direction : directions) {
             System.out.println(direction);
         }
-
     }
 
     public static List<String> getTextDirections(List<Edge> path) {
@@ -140,7 +139,6 @@ public class MapSearch {
         return directions;
     }
 
-    // (x, y) is starting location, (xx, yy) is ending location
     // final list will be backwards
     public List<Edge> getPath(Vertex start, Vertex end) {
 
