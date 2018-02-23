@@ -53,6 +53,8 @@ public class RoomType {
         return (colour & 0x00FFFFFF) == 0;
     }
 
+    public static boolean isYellow(int colour) { return (colour & 0xFFFFFF00) == 0xFFFFFF00; }
+
     /** For testing only */
     public static void main(String[] args) throws IOException {
         BufferedImage myImage = javax.imageio.ImageIO.read(new File("Levels/eight.png"));

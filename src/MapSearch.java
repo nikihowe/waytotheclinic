@@ -26,7 +26,7 @@ public class MapSearch {
                 new FileInputStream(prefix + "serialised/coordMap2.ser")));
 
         ObjectInputStream ois3 = new ObjectInputStream(new BufferedInputStream(
-                new FileInputStream("coordMap3.ser")));
+                new FileInputStream(prefix + "serialised/coordMap3.ser")));
 
 //        HashSet<Vertex> vertexSet = (HashSet<Vertex>) ois.readObject();
 //        HashMap<Vertex, HashSet<Edge>> adjList = (HashMap<Vertex, HashSet<Edge>>) ois1.readObject();
