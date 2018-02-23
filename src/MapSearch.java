@@ -47,8 +47,10 @@ public class MapSearch {
 
         double orientAngle = path.size() > 0 ? path.get(0).getAngle() : 0;
 
+        String textDirection = "";
+        // add all places you walk past on a straight to the list
+        ArrayList<String> straightLabelList = new ArrayList<>();
         for (Edge e : path) {
-            String textDirection = "";
 
             double newAngle = e.getAngle();
             assert(newAngle < 360 && newAngle >= 0);
@@ -68,33 +70,60 @@ public class MapSearch {
                 turnType = TurnType.STRAIGHT;
             }
 
+//            System.err.println(turnType);
+
             ArrayList<String> labels = e.getOutVertex().getLabels();
 
             String placeName = (labels.size() > 0) ? labels.get(0) : "";
 
-            switch (turnType) {
-                case UTURN:
-                    textDirection += "Turn around";
-                break;
+            if (turnType != TurnType.STRAIGHT) {
+                // flush last instruction if needed
+                if (straightLabelList.size() > 0) {
+                    for (int i = 0; i < straightLabelList.size(); i++) {
+                        String label = straightLabelList.get(i);
+                        if (!label.equals("")) {
+                            if (i != straightLabelList.size() - 1) {
+                                textDirection += " past the " + label + ",";
+                            } else {
+                                textDirection += " towards the " + label;
+                            }
+                        }
+                    }
 
-                case LEFT:
-                    textDirection += "Turn left";
-                break;
+                    // remove trailing comma
+                    textDirection = textDirection.replaceAll(",$", "");
 
-                case RIGHT:
-                    textDirection += "Turn right";
-                break;
+                    directions.add(textDirection);
 
-                case STRAIGHT:
-                    textDirection += "Go straight";
-                break;
+                    straightLabelList.clear();
+                    assert (straightLabelList.size() == 0);
+                }
+
+                switch (turnType) {
+                    case UTURN:
+                        textDirection = "Turn around";
+                        break;
+
+                    case LEFT:
+                        textDirection = "Turn left";
+                        break;
+
+                    case RIGHT:
+                        textDirection = "Turn right";
+                        break;
+                }
+
+                if (!placeName.equals("")) {
+                    textDirection += " towards the " + placeName;
+                }
+
+                directions.add(textDirection);
+                textDirection = "";
+            } else {
+                // if was straight, just add to list
+                if (straightLabelList.size() == 0) textDirection = "Go straight";
+                straightLabelList.add(placeName);
             }
-
-            if (!placeName.equals("")) {
-                textDirection += " towards " + placeName;
-            }
-
-            directions.add(textDirection);
 
             // point towards new direction
             orientAngle = newAngle;
