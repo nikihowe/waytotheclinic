@@ -71,8 +71,12 @@ public class VertexFinder {
     }
 
     public static void main(String[] args) throws IOException {
-        String lineLocation = "Levels/Level2LinesCol.png";
-        String mapLocation = "Levels/crop2.png";
+
+        // change this from "waytotheclinic" to "" if you have a different path
+        String prefix = "waytotheclinic/";
+
+        String lineLocation = prefix + "Levels/Level2LinesCol.png";
+        String mapLocation = prefix + "Levels/crop2.png";
 
         // Colours corresponding to rooms
         HashMap<String, String> roomColour = new HashMap<>();
@@ -214,11 +218,11 @@ public class VertexFinder {
         System.out.println("Saving results");
 
         ObjectOutputStream oos1 = new ObjectOutputStream(
-                new BufferedOutputStream(new FileOutputStream("vertexSet2.ser")));
+                new BufferedOutputStream(new FileOutputStream(prefix + "serialised/vertexSet2.ser")));
         ObjectOutputStream oos2 = new ObjectOutputStream(
-                new BufferedOutputStream(new FileOutputStream("adjList2.ser")));
+                new BufferedOutputStream(new FileOutputStream(prefix + "serialised/adjList2.ser")));
         ObjectOutputStream oos3 = new ObjectOutputStream(
-                new BufferedOutputStream(new FileOutputStream("coordMap2.ser")));
+                new BufferedOutputStream(new FileOutputStream(prefix + "serialised/coordMap2.ser")));
 
         oos1.writeObject(vertexSet);
         oos2.writeObject(adjList);

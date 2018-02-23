@@ -7,14 +7,15 @@ public class Search {
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
 
+        // change this from "waytotheclinic" to "" if you have a different path
         String prefix = "waytotheclinic/";
 
         ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream(
-                new FileInputStream(prefix + "vertexSet2.ser")));
+                new FileInputStream(prefix + "serialised/vertexSet2.ser")));
         ObjectInputStream ois1 = new ObjectInputStream(new BufferedInputStream(
-                new FileInputStream(prefix + "adjList2.ser")));
+                new FileInputStream(prefix + "serialised/adjList2.ser")));
         ObjectInputStream ois2 = new ObjectInputStream(new BufferedInputStream(
-                new FileInputStream(prefix + "coordMap2.ser")));
+                new FileInputStream(prefix + "serialised/coordMap2.ser")));
 
         HashSet<Vertex> vertexSet = (HashSet<Vertex>) ois.readObject();
         HashMap<Vertex, HashSet<Edge>> adjList = (HashMap<Vertex, HashSet<Edge>>) ois1.readObject();

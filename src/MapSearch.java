@@ -13,57 +13,24 @@ public class MapSearch {
     }
 
     public MapSearch() throws IOException, ClassNotFoundException {
+
+        // change this from "waytotheclinic" to "" if you have a different path
+        String prefix = "waytotheclinic/";
+
         ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream(
-                new FileInputStream("vertexSet2.ser")));
+                new FileInputStream(prefix + "serialised/vertexSet2.ser")));
         ObjectInputStream ois1 = new ObjectInputStream(new BufferedInputStream(
-                new FileInputStream("adjList2.ser")));
+                new FileInputStream(prefix + "serialised/adjList2.ser")));
         ObjectInputStream ois2 = new ObjectInputStream(new BufferedInputStream(
-                new FileInputStream("coordMap2.ser")));
+                new FileInputStream(prefix + "serialised/coordMap2.ser")));
 
         HashSet<Vertex> vertexSet = (HashSet<Vertex>) ois.readObject();
         HashMap<Vertex, HashSet<Edge>> adjList = (HashMap<Vertex, HashSet<Edge>>) ois1.readObject();
         HashMap<Pair<Integer, Integer>, Vertex> coordMap = (HashMap<Pair<Integer, Integer>, Vertex>) ois2.readObject();
 
-//        for (Vertex v : vertexSet) {
-//            System.out.println(v);
-//            for (Edge e : adjList.get(v)) {
-//                System.out.println(e);
-//            }
-//        }
-
         Vertex start = coordMap.get(new Pair(73, 331));
         Vertex end = coordMap.get(new Pair(683, 166));
         List<Edge> path = getPath(start, end);
-
-        /*
-        ArrayList<Edge> path  = new ArrayList<>();
-
-        // test for directions
-        int[][] coords = {
-                {1544, 393}, {1544, 439}, {1596, 439}, {1596, 668},
-                {1603, 668}, {1603, 795}, {2696, 795}, {2696, 728}};
-
-        for (int i = 0; i < coords.length - 1; i++) {
-            for (Vertex v : vertexSet) {
-                if (v.getX() == coords[i][0] && v.getY() == coords[i][1]) {
-//                    System.out.println(v.getLabels().size());
-                    ArrayList<Edge> outEdges = v.getOutEdges();
-                    for (int j = 0; j < outEdges.size(); j++) {
-                        Edge edge = outEdges.get(j);
-                        Vertex out = edge.getOutVertex();
-                        if (out.getX() == coords[i+1][0] && out.getY() == coords[i+1][1] ) {
-                            path.add(edge);
-                        }
-
-                    }
-                }
-            }
-        }
-
-        assert(coords.length == path.size() + 1);
-        System.out.println(path.size());
-        System.out.println(coords.length);
-        */
 
         System.out.println(path);
 
@@ -102,7 +69,6 @@ public class MapSearch {
             }
 
             ArrayList<String> labels = e.getOutVertex().getLabels();
-//            assert (labels.size() == 0);
 
             String placeName = (labels.size() > 0) ? labels.get(0) : "";
 
