@@ -14,16 +14,16 @@ import static java.lang.Math.min;
 
 public class VertexFinder {
 
-    private static BufferedImage lineImage;
-    private static BufferedImage mapImage;
+    private static HashMap<Integer, BufferedImage> lineImages;
+    private static HashMap<Integer, BufferedImage> mapImages;
     private static int width = 0;
     private static int height = 0;
-    private static int level = 2;
+//    private static int level = 2;
 
     private static int LINE = 1;
     private static int MAP = 2;
 
-    private static JFrame showCropped(int x, int y, int cropWidth, int cropHeight, int mode) {
+    /*private static JFrame showCropped(int x, int y, int cropWidth, int cropHeight, int mode) {
 
         BufferedImage image;
         int dotColour;
@@ -59,7 +59,7 @@ public class VertexFinder {
         image.setRGB(x, y, tmpColor); // set colour back
 
         return frame;
-    }
+    }*/
 
     public static final BufferedImage deepCopy(BufferedImage image) {
 //        BufferedImage clone = UIUtil.createImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_ARGB);
@@ -71,8 +71,10 @@ public class VertexFinder {
     }
 
     public static void main(String[] args) throws IOException {
-        String lineLocation = "Levels/Level2LinesCol.png";
-        String mapLocation = "Levels/crop2.png";
+        String lineLocation2 = "Levels/Level2LinesCol.png";
+        String mapLocation2 = "Levels/crop2.png";
+        String lineLocation3 = "Levels/Level3LineCol.png";
+        String mapLocation3 = "Levels/crop3.png";
 
         // Colours corresponding to rooms
         HashMap<String, String> roomColour = new HashMap<>();
@@ -85,49 +87,50 @@ public class VertexFinder {
         roomColour.put("black", "Hall");
         roomColour.put("white", "Wall");
 
-        // Get the the lines image (used for parsing in the map)
-        // and the actual image (used for asking to label nodes)
-        lineImage = javax.imageio.ImageIO.read(new File(lineLocation));
-        mapImage = javax.imageio.ImageIO.read(new File(mapLocation));
+        HashMap<Integer, HashSet<Vertex>> vertexSet = null;
 
-        // Load in image dimensions (both images will have same dimensions)
-        width = lineImage.getWidth();
-        height = lineImage.getHeight();
-        assert(width == mapImage.getWidth());
-        assert(height == mapImage.getHeight());
+        for (int level = 2; level <= 3; level++) {
 
-        // Will be used to store vertices and edges adjacent to each vertex
-        HashSet<Vertex> vertexSet = new HashSet<>();
-        HashMap<Pair<Integer, Integer>, Vertex> coordinateMap = new HashMap<>();
-        HashMap<Vertex, HashSet<Edge>> adjList= new HashMap<>();
+            // Get the the lines image (used for parsing in the map)
+            // and the actual image (used for asking to label nodes)
+            lineImages.put(level, javax.imageio.ImageIO.read(new File(lineLocation2)));
+            mapImages.put(level, javax.imageio.ImageIO.read(new File(mapLocation2)));
 
-        //
-        HashSet<Vertex> manualCheck = new HashSet<>();
-        HashSet<Vertex> toRemove = new HashSet<>();
+            // Load in image dimensions (both images will have same dimensions)
+            width = lineImages.get(level).getWidth();
+            height = lineImages.get(level).getHeight();
+            assert (width == mapImages.get(level).getWidth());
+            assert (height == mapImages.get(level).getHeight());
 
-        // Used to get user input for the node labels
-        Scanner stdin = new Scanner(System.in);
+            // Will be used to store vertices and edges adjacent to each vertex
+            vertexSet = new HashSet<>();
+            HashMap<Pair<Integer, Integer>, Vertex> coordinateMap = new HashMap<>();
+            HashMap<Vertex, HashSet<Edge>> adjList = new HashMap<>();
 
-        int numVertices = 0;
-        // Look through image and extract all vertices
-        for (int i = 0; i < width; i++) { // for each pixel
-            for (int j = 0; j < height; j++) {
+            // Used to get user input for the node labels
+            Scanner stdin = new Scanner(System.in);
 
-                int col = lineImage.getRGB(i, j);
+            int numVertices = 0;
+            // Look through image and extract all vertices
+            for (int i = 0; i < width; i++) { // for each pixel
+                for (int j = 0; j < height; j++) {
+
+                    int col = lineImages.get(level).getRGB(i, j);
 //                System.out.println("Vertex: " + i + "," + j + " has colour " + RoomType.getColour(col));
 
-                if (isFilled(i, j)) { // if the pixel isn't white
-                    // Get the pixel's colour (used to deduce type)
-                    int colourRGB = lineImage.getRGB(i, j);
+                    if (isFilled(i, j)) { // if the pixel isn't white
+                        // Get the pixel's colour (used to deduce type)
+                        int colourRGB = lineImages.get(level).getRGB(i, j);
 
 //                    System.out.println("Vertex " + i + "," + j + " is " + RoomType.getColour(colourRGB));
 
-                    if (!RoomType.isBlack(colourRGB)) { // it is a vertex
-                        Vertex v = new Vertex(i, j, level);
-                        vertexSet.add(v); // store in our set of vertices
-                        coordinateMap.put(new Pair(i, j), v);
-                        adjList.put(v, new HashSet<>()); // make a new entry in our set of edges of this vertex
-                        numVertices++;
+                        if (!RoomType.isBlack(colourRGB)) { // it is a vertex
+                            Vertex v = new Vertex(i, j, level);
+                            vertexSet.add(v); // store in our set of vertices
+                            coordinateMap.put(new Pair(i, j), v);
+                            adjList.put(v, new HashSet<>()); // make a new entry in our set of edges of this vertex
+                            numVertices++;
+                        }
                     }
                 }
             }

@@ -21,7 +21,7 @@ public class RoomType {
             return "red";
         } else if (colour == 0xFF002AFF) {
             return "blue";
-        } else if (colour == 0xFFFFFF00) {
+        } else if ((colour & 0xFFFFFF00) == 0xFFFFFF00) { // any shade of yellow
             return "yellow";
         } else if (colour == 0xFFCC00FF) {
             return "pink";

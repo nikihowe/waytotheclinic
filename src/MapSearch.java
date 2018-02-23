@@ -19,9 +19,13 @@ public class MapSearch {
         ObjectInputStream ois2 = new ObjectInputStream(new BufferedInputStream(
                 new FileInputStream("coordMap2.ser")));
 
-        HashSet<Vertex> vertexSet = (HashSet<Vertex>) ois.readObject();
-        HashMap<Vertex, HashSet<Edge>> adjList = (HashMap<Vertex, HashSet<Edge>>) ois1.readObject();
-        HashMap<Pair<Integer, Integer>, Vertex> coordMap = (HashMap<Pair<Integer, Integer>, Vertex>) ois2.readObject();
+        ObjectInputStream ois3 = new ObjectInputStream(new BufferedInputStream(
+                new FileInputStream("coordMap3.ser")));
+
+//        HashSet<Vertex> vertexSet = (HashSet<Vertex>) ois.readObject();
+//        HashMap<Vertex, HashSet<Edge>> adjList = (HashMap<Vertex, HashSet<Edge>>) ois1.readObject();
+        HashMap<Pair<Integer, Integer>, Vertex> coordMap2 = (HashMap<Pair<Integer, Integer>, Vertex>) ois2.readObject();
+        HashMap<Pair<Integer, Integer>, Vertex> coordMap3 = (HashMap<Pair<Integer, Integer>, Vertex>) ois3.readObject();
 
 //        for (Vertex v : vertexSet) {
 //            System.out.println(v);
@@ -30,8 +34,8 @@ public class MapSearch {
 //            }
 //        }
 
-        Vertex start = coordMap.get(new Pair(73, 331));
-        Vertex end = coordMap.get(new Pair(683, 166));
+        Vertex start = coordMap2.get(new Pair(73, 331));
+        Vertex end = coordMap2.get(new Pair(683, 166));
         List<Edge> path = getPath(start, end);
 
         /*
