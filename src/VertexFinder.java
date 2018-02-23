@@ -1,6 +1,6 @@
-import com.intellij.util.ui.UIUtil;
-import kotlin.Pair;
-//import javafx.util.Pair;
+//import com.intellij.util.ui.UIUtil;
+//import kotlin.Pair;
+import javafx.util.Pair;
 
 import javax.swing.*;
 import java.awt.*;
@@ -8,14 +8,15 @@ import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.*;
+import java.util.List;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 
 public class VertexFinder {
 
-    private static HashMap<Integer, BufferedImage> lineImages;
-    private static HashMap<Integer, BufferedImage> mapImages;
+    private static List<BufferedImage> lineImages;
+    private static List<BufferedImage> mapImages;
     private static int width = 0;
     private static int height = 0;
 //    private static int level = 2;
@@ -62,8 +63,8 @@ public class VertexFinder {
     }*/
 
     public static final BufferedImage deepCopy(BufferedImage image) {
-        BufferedImage clone = UIUtil.createImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_ARGB);
-//        BufferedImage clone = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_ARGB);
+//        BufferedImage clone = UIUtil.createImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        BufferedImage clone = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2d = clone.createGraphics();
         g2d.drawImage(image, 0, 0, null);
         g2d.dispose();
@@ -87,14 +88,18 @@ public class VertexFinder {
         roomColour.put("black", "Hall");
         roomColour.put("white", "Wall");
 
-        HashMap<Integer, HashSet<Vertex>> vertexSet = null;
+        List<HashSet<Vertex>> verticesByFloor;
 
-        for (int level = 2; level <= 3; level++) {
+        // Colour -> set of points
+        Map<Integer, Set<Vertex>> stairMap = new HashMap<>();
+
+        // level 0 == level 2; level 1 == level 3
+        for (int level = 0; level <= 1; level++) { // note that until we have floors 0 and 1, we'll be offset
 
             // Get the the lines image (used for parsing in the map)
             // and the actual image (used for asking to label nodes)
-            lineImages.put(level, javax.imageio.ImageIO.read(new File(lineLocation2)));
-            mapImages.put(level, javax.imageio.ImageIO.read(new File(mapLocation2)));
+            lineImages.add(javax.imageio.ImageIO.read(new File(lineLocation2)));
+            mapImages.add(javax.imageio.ImageIO.read(new File(mapLocation2)));
 
             // Load in image dimensions (both images will have same dimensions)
             width = lineImages.get(level).getWidth();
@@ -103,12 +108,12 @@ public class VertexFinder {
             assert (height == mapImages.get(level).getHeight());
 
             // Will be used to store vertices and edges adjacent to each vertex
-            vertexSet = new HashSet<>();
+            verticesByFloor = new ArrayList<>();
             HashMap<Pair<Integer, Integer>, Vertex> coordinateMap = new HashMap<>();
             HashMap<Vertex, HashSet<Edge>> adjList = new HashMap<>();
 
             // Used to get user input for the node labels
-            Scanner stdin = new Scanner(System.in);
+            Scanner stdin = new Scanner(System.in); // do we use this anymore?
 
             int numVertices = 0;
             // Look through image and extract all vertices
@@ -124,123 +129,117 @@ public class VertexFinder {
 
 //                    System.out.println("Vertex " + i + "," + j + " is " + RoomType.getColour(colourRGB));
 
-<<<<<<< HEAD
                         if (!RoomType.isBlack(colourRGB)) { // it is a vertex
                             Vertex v = new Vertex(i, j, level);
-                            vertexSet.add(v); // store in our set of vertices
+                            verticesByFloor.get(level).add(v); // store in our set of vertices
                             coordinateMap.put(new Pair(i, j), v);
                             adjList.put(v, new HashSet<>()); // make a new entry in our set of edges of this vertex
                             numVertices++;
                         }
-=======
-                    if (!RoomType.isBlack(colourRGB)) { // it is a vertex
-                        Vertex v = new Vertex(i, j, level);
-                        vertexSet.add(v); // store in our set of vertices
-                        coordinateMap.put(new Pair(i, j), v);
-                        adjList.put(v, new HashSet<Edge>()); // make a new entry in our set of edges of this vertex
-                        numVertices++;
->>>>>>> de7aa89f2e3c2f30847ac2f32df4cd78d507d1e8
                     }
                 }
             }
-        }
 
 //        for (Vertex v : vertexSet) {
 //            int col = lineImage.getRGB(v.getX(), v.getY());
 //            System.out.println("Vertex: " + v + " has colour " + RoomType.getColour(col));
 //        }
 
-        int[][] dir = new int[][]{ {1, 0}, {0, 1}, {-1, 0}, {0, -1} };
-        double[] angles = new double[] { 180, 90, 0, 270 };
+            // Have added all the vertices; now it's time to add the edges
+            int[][] dir = new int[][]{ {1, 0}, {0, 1}, {-1, 0}, {0, -1} };
+            double[] angles = new double[] { 180, 90, 0, 270 };
 
-        for (Vertex v : vertexSet) {
-            int x = v.getX();
-            int y = v.getY();
+            // Connect vertices on the same level (not stairs/lifts)
+            for (Vertex v : verticesByFloor.get(level)) {
+                int x = v.getX();
+                int y = v.getY();
 
-            // For each direction around the pixel, find the next edge to add
-            for (int b = 0; b < dir.length; b++) { // for each direction
-                for (int i = 1; i < Integer.MAX_VALUE; i++) { // check until we hit a wall
+                // For each direction around the pixel, find the next edge to add
+                for (int b = 0; b < dir.length; b++) { // for each direction
+                    for (int i = 1; i < Integer.MAX_VALUE; i++) { // check until we hit a wall
 
-                    int checkX = x + dir[b][0] * i; // how far on x
-                    int checkY = y + dir[b][1] * i; // how far on y (it'll only be one of these)
+                        int checkX = x + dir[b][0] * i; // how far on x
+                        int checkY = y + dir[b][1] * i; // how far on y (it'll only be one of these)
 
-                    if (!isFilled(checkX, checkY)) {
-                        break; // if we're not on a hall or node, stop searching in this direction
-                    }
-
-                    int pixelColour = lineImage.getRGB(checkX, checkY);
-                    // We want to add an edge to the pixel at this location
-                    if (RoomType.notBW(pixelColour)) {
-                        Vertex w = coordinateMap.get(new Pair(checkX, checkY));
-                        assert (!v.samePlaceAs(w));
-                        adjList.get(v).add(new Edge(v, w, i, angles[b]));
+                        int pixelColour = lineImages.get(level).getRGB(checkX, checkY);
+                        // We want to add an edge to the pixel at this location
+                        if (RoomType.notBW(pixelColour)) {
+                            Vertex w = coordinateMap.get(new Pair(checkX, checkY));
+                            assert (!v.samePlaceAs(w));
+                            adjList.get(v).add(new Edge(v, w, i, angles[b]));
 //                        System.out.println("Added: " + adjList.get(v));
-                        break; // only get the first adjacent node
-                    }
+                            break; // only get the first adjacent node
+                        }
 //                    JFrame frame = showCropped(checkX, checkY, 80, 80, LINE);
 //                    frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
 
+                    }
                 }
             }
-        }
 
-        System.out.println("Number of Pixels: " + width * height);
-        System.out.println("Number of Vertices: " + numVertices);
+            // Connect vertices on different levels (stairs/lifts)
 
-        System.out.println("Labelling... ");
-        boolean autofill = true;
-        int i = -1;
-        for (Vertex v : vertexSet) {
-            i++;
-            if (!RoomType.isGrey(lineImage.getRGB(v.getX(), v.getY()))) {
-                v.addLabel(roomColour.get(RoomType.getColour(lineImage.getRGB(v.getX(), v.getY()))));
-                continue; // go to the next node
-            }
 
-            if (autofill) {
-                v.addLabel("" + i);
-                continue;
-            }
 
-            JFrame frame = showCropped(v.getX(), v.getY(), 200, 200, MAP);
-            System.out.println("Add labels, seperated by commas: ");
 
-            String[] line = stdin.nextLine().split(",");
+            System.out.println("Number of Pixels: " + width * height);
+            System.out.println("Number of Vertices: " + numVertices);
 
-            if (line.length == 1 && line[0].equals("done")) break;
-
-            for (String label : line) {
-                label = label.trim();
-                if (label.toLowerCase().equals("i")) {
-                    v.setIntersection();
-                } else {
-                    v.addLabel(label);
+            System.out.println("Labelling... ");
+            boolean autofill = true;
+            int i = -1;
+            for (Vertex v : vertexSet) {
+                i++;
+                if (!RoomType.isGrey(lineImage.getRGB(v.getX(), v.getY()))) {
+                    v.addLabel(roomColour.get(RoomType.getColour(lineImage.getRGB(v.getX(), v.getY()))));
+                    continue; // go to the next node
                 }
-            }
+
+                if (autofill) {
+                    v.addLabel("" + i);
+                    continue;
+                }
+
+                JFrame frame = showCropped(v.getX(), v.getY(), 200, 200, MAP);
+                System.out.println("Add labels, seperated by commas: ");
+
+                String[] line = stdin.nextLine().split(",");
+
+                if (line.length == 1 && line[0].equals("done")) break;
+
+                for (String label : line) {
+                    label = label.trim();
+                    if (label.toLowerCase().equals("i")) {
+                        v.setIntersection();
+                    } else {
+                        v.addLabel(label);
+                    }
+                }
 //            System.out.println("vertex " + v);
-            frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
+                frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
+            }
+
+            printResult(vertexSet, adjList);
+
+            System.out.println("Saving results");
+
+            ObjectOutputStream oos1 = new ObjectOutputStream(
+                    new BufferedOutputStream(new FileOutputStream("vertexSet2.ser")));
+            ObjectOutputStream oos2 = new ObjectOutputStream(
+                    new BufferedOutputStream(new FileOutputStream("adjList2.ser")));
+            ObjectOutputStream oos3 = new ObjectOutputStream(
+                    new BufferedOutputStream(new FileOutputStream("coordMap2.ser")));
+
+            oos1.writeObject(vertexSet);
+            oos2.writeObject(adjList);
+            oos3.writeObject(coordinateMap);
+
+            oos1.flush();
+            oos2.flush();
+            oos3.flush();
+
+            System.out.println("Done");
         }
-
-        printResult(vertexSet, adjList);
-
-        System.out.println("Saving results");
-
-        ObjectOutputStream oos1 = new ObjectOutputStream(
-                new BufferedOutputStream(new FileOutputStream("vertexSet2.ser")));
-        ObjectOutputStream oos2 = new ObjectOutputStream(
-                new BufferedOutputStream(new FileOutputStream("adjList2.ser")));
-        ObjectOutputStream oos3 = new ObjectOutputStream(
-                new BufferedOutputStream(new FileOutputStream("coordMap2.ser")));
-
-        oos1.writeObject(vertexSet);
-        oos2.writeObject(adjList);
-        oos3.writeObject(coordinateMap);
-
-        oos1.flush();
-        oos2.flush();
-        oos3.flush();
-
-        System.out.println("Done");
     }
 
 
