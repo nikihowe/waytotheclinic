@@ -7,6 +7,9 @@ public class Search {
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
 
+        // my current location
+        Vertex myLocation = new Vertex(100, 200, 3);
+
         // change this from "waytotheclinic" to "" if you have a different path
         String prefix = "waytotheclinic/";
 
@@ -50,11 +53,30 @@ public class Search {
                 }
             }
 
-            for (Map.Entry<Vertex, String> entry : bestVertices.entrySet()) {
-                Vertex v = entry.getKey();
-                String label = entry.getValue();
-                System.out.format("%s %s\n", v, label);
+            // check if no vertices match
+            if (bestVertices.size() > 0) {
+
+                // choose closest one vertex
+                int closest = Integer.MAX_VALUE;
+                Vertex closestVertex = null;
+                for (Map.Entry<Vertex, String> entry : bestVertices.entrySet()) {
+                    Vertex v = entry.getKey();
+                    String label = entry.getValue();
+
+                    int currDistance = VertexComparator.manhattanDistance(myLocation, v);
+                    System.out.format("%s %s %d\n", v, label, currDistance);
+
+                    if (currDistance < closest) {
+                        closest = currDistance;
+                        closestVertex = v;
+                    }
+                }
+
+                System.out.println("Best vertex: " + closestVertex);
+            } else {
+                System.out.println("No vertices found. Search for something else?");
             }
+
 
 
         } else {
