@@ -17,7 +17,7 @@ public class RoomType {
     public static String getColour(int colour) {
         if (colour == 0xFF808080) {
             return "grey";
-        } else if (colour == 0xFFFF0000) {
+        } else if ((colour & 0xFFFFFF00) == 0xFFFF0000) {
             return "red";
         } else if (colour == 0xFF002AFF) {
             return "blue";
@@ -26,6 +26,8 @@ public class RoomType {
         } else if (colour == 0xFFCC00FF) {
             return "pink";
         } else if (colour == 0xFF295F29) {
+            return "darkgreen";
+        } else if ((colour & 0xFFFFFF00) == 0xFF00FF00) {
             return "green";
         } else if (colour == 0xFF000000) {
             return "black";
@@ -53,7 +55,17 @@ public class RoomType {
         return (colour & 0x00FFFFFF) == 0;
     }
 
-    public static boolean isYellow(int colour) { return (colour & 0xFFFFFF00) == 0xFFFFFF00; }
+    public static boolean isYellow(int colour) {
+        return (colour & 0xFFFFFF00) == 0xFFFFFF00;
+    }
+
+    public static boolean isRed(int colour) {
+        return (colour & 0xFFFFFF00) == 0xFFFF0000;
+    }
+
+    public static boolean isGreen(int colour) {
+        return (colour & 0xFFFFFF00) == 0xFF00FF00;
+    }
 
     /** For testing only */
     public static void main(String[] args) throws IOException {

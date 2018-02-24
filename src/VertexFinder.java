@@ -20,7 +20,8 @@ public class VertexFinder {
     private static int width = 0;
     private static int height = 0;
     private static final int STAIR_COST = 400;
-//    private static int level = 2;
+    private static final int LIFT_COST = 400;
+    private static boolean STAIRS_OK = true;
 
     private static int LINE = 1;
     private static int MAP = 2;
@@ -89,7 +90,7 @@ public class VertexFinder {
         roomColour.put("blue", "Toilet");
         roomColour.put("yellow", "Stairs");
         roomColour.put("pink", "Food");
-        roomColour.put("green", "Accessible Toilet");
+        roomColour.put("darkgreen", "Accessible Toilet");
         roomColour.put("black", "Hall");
         roomColour.put("white", "Wall");
 
@@ -97,6 +98,8 @@ public class VertexFinder {
 
         // Colour -> set of points
         Map<Integer, Set<Vertex>> stairMap = new HashMap<>();
+        Map<Integer, Set<Vertex>> liftMap = new HashMap<>();
+        Map<Integer, Set<Vertex>> diagonalMap = new HashMap<>();
 
         int numVertices = 0;
 
@@ -153,6 +156,28 @@ public class VertexFinder {
                                     stairMap.put(colourRGB, temp);
                                 }
                             }
+
+                            // Check if lift
+                            if (RoomType.isRed(colourRGB)) {
+                                if (liftMap.keySet().contains(colourRGB)) { // we already have a stair of this colour
+                                    liftMap.get(colourRGB).add(v);
+                                } else { // first instance of this colour, so make a new set
+                                    HashSet<Vertex> temp = new HashSet<>();
+                                    temp.add(v);
+                                    liftMap.put(colourRGB, temp);
+                                }
+                            }
+
+                            // Check if diagonal
+                            if (RoomType.isGreen(colourRGB)) {
+                                if (diagonalMap.keySet().contains(colourRGB)) { // we already have a stair of this colour
+                                    diagonalMap.get(colourRGB).add(v);
+                                } else { // first instance of this colour, so make a new set
+                                    HashSet<Vertex> temp = new HashSet<>();
+                                    temp.add(v);
+                                    diagonalMap.put(colourRGB, temp);
+                                }
+                            }
                         }
                     }
                 }
@@ -206,19 +231,43 @@ public class VertexFinder {
 
             // Make edges between stair/lift vertices on different levels
             int vertexColour = lineImages.get(z).getRGB(x, y);
-            // Stairs
 
+            // Stairs
             if (RoomType.isYellow(vertexColour)) {
                 assert(stairMap.keySet().contains(vertexColour));
                 for (Vertex w : stairMap.get(vertexColour)) {
-                    if (!v.equals(w)) {
+                    if (!v.equals(w) && Math.abs(v.getZ() - w.getZ()) < 3) { // don't use stairs if floors are far apart
                         adjList.get(v).add(new Edge(v, w, STAIR_COST));
-                        System.out.println("added " + w + " to " + v);
+//                        System.out.println("added " + w + " to " + v);
+                    }
+                }
+            }
+
+            // Lifts
+            if (RoomType.isRed(vertexColour)) {
+                assert(liftMap.keySet().contains(vertexColour));
+                for (Vertex w : liftMap.get(vertexColour)) {
+                    if (!v.equals(w)) {
+                        adjList.get(v).add(new Edge(v, w, LIFT_COST));
+//                        System.out.println("added " + w + " to " + v);
+                    }
+                }
+            }
+
+            // Diagonals
+            if (RoomType.isGreen(vertexColour)) {
+                assert(diagonalMap.keySet().contains(vertexColour));
+                for (Vertex w : diagonalMap.get(vertexColour)) {
+                    if (!v.equals(w)) {
+                        adjList.get(v).add(new Edge(v, w, euclidDistance(v, w)));
+//                        System.out.println("added " + w + " to " + v);
                     }
                 }
             }
         }
         System.out.println("Stair Map " + stairMap);
+        System.out.println("Lift Map " + liftMap);
+        System.out.println("Diagonal Map " + diagonalMap);
 
         // Used to get user input for the node labels
         Scanner stdin = new Scanner(System.in);
@@ -313,6 +362,15 @@ public class VertexFinder {
 
     public static boolean outOfBounds(int x, int y) {
         return (x < 0 || x >= width || y < 0 || y >= height);
+    }
+
+    // Calculates 2D Euclidean distance. Requires vertices to be on the same floor.
+    public static int euclidDistance(Vertex v, Vertex w) throws RuntimeException {
+        if (v.getZ() != w.getZ()) {
+            throw new RuntimeException("Expected vertices to be on same floor");
+        } else {
+            return (int) Math.sqrt( (v.getX()-w.getX())*(v.getX()-w.getX()) + (v.getY()-w.getY())*(v.getY()-w.getY()) );
+        }
     }
 
 }
