@@ -292,7 +292,7 @@ public class VertexFinder {
             }
 
             JFrame frame = showCropped(v.getX(), v.getY(), v.getZ(), 200, 200, MAP);
-            System.out.println("Add labels, seperated by commas: ");
+            System.out.println("Add labels, separated by commas: ");
 
             String[] line = stdin.nextLine().split(",");
 
@@ -316,17 +316,17 @@ public class VertexFinder {
 
         ObjectOutputStream oos1 = new ObjectOutputStream(
                 new BufferedOutputStream(new FileOutputStream(prefix + "serialised/vertexSet3.ser")));
-        ObjectOutputStream oos2 = new ObjectOutputStream(
-                new BufferedOutputStream(new FileOutputStream(prefix + "serialised/adjList3.ser")));
+//        ObjectOutputStream oos2 = new ObjectOutputStream(
+//                new BufferedOutputStream(new FileOutputStream(prefix + "serialised/adjList3.ser")));
 //        ObjectOutputStream oos3 = new ObjectOutputStream(
 //                new BufferedOutputStream(new FileOutputStream(prefix + "serialised/coordMap3.ser")));
 
         oos1.writeObject(new HashSet(vertexMap.keySet()));
-        oos2.writeObject(adjList);
+//        oos2.writeObject(adjList);
 //        oos3.writeObject(coordinateMap);
 
         oos1.flush();
-        oos2.flush();
+//        oos2.flush();
 //        oos3.flush();
 
 //            for (Integer j : stairMap.keySet()) {

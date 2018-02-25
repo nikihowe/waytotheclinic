@@ -37,9 +37,9 @@ public class MapSearch {
             vertexMap.put(v, v);
         }
 
-        System.out.println("vertexSet:" + vertexSet);
-        System.out.println("vertexMap:" + vertexMap);
-        System.out.println("start in map:" + vertexMap.containsKey(new Vertex(785, 241, 1)));
+//        System.out.println("vertexSet:" + vertexSet);
+//        System.out.println("vertexMap:" + vertexMap);
+//        System.out.println("start in map:" + vertexMap.containsKey(new Vertex(785, 241, 1)));
 //        HashMap<Pair<Integer, Integer>, Vertex> coordMap3 = (HashMap<Pair<Integer, Integer>, Vertex>) ois3.readObject();
 
         Vertex start = vertexMap.get(new Vertex(785, 241, 1));
@@ -153,7 +153,6 @@ public class MapSearch {
 
         directions.add("You have arrived at your destination");
 
-
         return directions;
     }
 
@@ -173,7 +172,7 @@ public class MapSearch {
 
         HashMap<Vertex, Integer> fScore = new HashMap<>();
 //        System.out.println("start: " + start + " end: " + end);
-        fScore.put(start, manhattanDistance(start, end));
+        fScore.put(start, VertexComparator.manhattanDistance(start, end));
 
         while (!openSet.isEmpty()) {
             // From Wikipedia
@@ -220,7 +219,7 @@ public class MapSearch {
                 cameFrom.put(neighbour, current);
                 cameFromEdge.put(neighbour, adjEdge);
                 gScore.put(neighbour, tentative_gScore);
-                fScore.put(neighbour, tryGet(neighbour, gScore) + manhattanDistance(neighbour, end));
+                fScore.put(neighbour, tryGet(neighbour, gScore) + VertexComparator.manhattanDistance(neighbour, end));
             }
         }
         System.err.println("Returning null, OUCH");
@@ -232,15 +231,6 @@ public class MapSearch {
         return d != null ? d : Integer.MAX_VALUE;
     }
 
-    public static int manhattanDistance(Vertex start, Vertex end) {
-        System.out.println("start:" + start);
-        System.out.println("end:" + end);
-        return Math.abs(start.getX() - end.getX()) + Math.abs(start.getY() - end.getY());
-    }
-    public static int birdDistance(Vertex start, Vertex end) {
-        return (int) Math.sqrt((start.getX() - end.getX()) * (start.getX() - end.getX())
-                + (start.getY() - end.getY()) * (start.getY() - end.getY()));
-    }
     private Vertex pickBestNext(Set<Vertex> openSet, HashMap<Vertex, Integer> fScore) {
         Vertex toReturn = null;
         int best = Integer.MAX_VALUE;
