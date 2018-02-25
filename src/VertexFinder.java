@@ -278,6 +278,7 @@ public class VertexFinder {
         // Labelling section
         System.out.println("Labelling... ");
         boolean autofill = true;
+//        autofill = false;
         int i = -1;
         for (Vertex v : vertexMap.keySet()) {
             i++;
@@ -287,7 +288,10 @@ public class VertexFinder {
             }
 
             if (autofill) {
-                v.addLabel("(" + v.getX() + "," + v.getY() + "," + v.getZ() + ")");
+//                v.addLabel("(" + v.getX() + "," + v.getY() + "," + v.getZ() + ")");
+                v.addLabel("" + i++);
+                v.addLabel("" + i++);
+                v.addLabel("" + i++);
                 continue;
             }
 

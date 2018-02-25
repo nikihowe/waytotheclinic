@@ -11,18 +11,18 @@ public class Search {
         Vertex myLocation = new Vertex(100, 200, 3);
 
         // change this from "waytotheclinic" to "" if you have a different path
-        String prefix = "waytotheclinic/";
+        String prefix = "";
 
         ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream(
-                new FileInputStream(prefix + "serialised/vertexSet2.ser")));
-        ObjectInputStream ois1 = new ObjectInputStream(new BufferedInputStream(
-                new FileInputStream(prefix + "serialised/adjList2.ser")));
-        ObjectInputStream ois2 = new ObjectInputStream(new BufferedInputStream(
-                new FileInputStream(prefix + "serialised/coordMap2.ser")));
+                new FileInputStream(prefix + "serialised/vertexSet3.ser")));
+//        ObjectInputStream ois1 = new ObjectInputStream(new BufferedInputStream(
+//                new FileInputStream(prefix + "serialised/adjList2.ser")));
+//        ObjectInputStream ois2 = new ObjectInputStream(new BufferedInputStream(
+//                new FileInputStream(prefix + "serialised/coordMap2.ser")));
 
         HashSet<Vertex> vertexSet = (HashSet<Vertex>) ois.readObject();
-        HashMap<Vertex, HashSet<Edge>> adjList = (HashMap<Vertex, HashSet<Edge>>) ois1.readObject();
-        HashMap<Pair<Integer, Integer>, Vertex> coordMap = (HashMap<Pair<Integer, Integer>, Vertex>) ois2.readObject();
+//        HashMap<Vertex, HashSet<Edge>> adjList = (HashMap<Vertex, HashSet<Edge>>) ois1.readObject();
+//        HashMap<Pair<Integer, Integer>, Vertex> coordMap = (HashMap<Pair<Integer, Integer>, Vertex>) ois2.readObject();
 
         HashMap<Vertex, String> bestVertices = new HashMap<>();
         int bestLCS = 1; // set best LCS to 1, so we ignore vertices that have 0 match
