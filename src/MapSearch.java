@@ -95,7 +95,7 @@ public class MapSearch {
 
                 ArrayList<String> labels = e.getOutVertex().getLabels();
 
-                String placeName = (labels.size() > 0) ? labels.get(0) : "";
+                String placeName = (labels.size() > 0) ? "" + labels : "";
 
                 if (turnType != TurnType.STRAIGHT) {
                     // flush last instruction if needed
