@@ -10,6 +10,7 @@ public class Edge implements Serializable {
     private int cost;
     private double angle;
     private ArrayList<String> labels;
+    private boolean s = false;
 
     public Edge(Vertex in, Vertex out, int cost) {
         this.in = in;
@@ -25,6 +26,14 @@ public class Edge implements Serializable {
     public Edge(Vertex in, Vertex out, int cost, double angle) {
         this(in, out, cost); // cool
         this.angle = angle;
+    }
+
+    public void makeStairs() {
+        s = true;
+    }
+
+    public boolean isStairs() {
+        return s;
     }
 
     @Override

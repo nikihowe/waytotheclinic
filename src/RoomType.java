@@ -33,6 +33,8 @@ public class RoomType {
             return "black";
         } else if (colour == 0xFFFFFFFF) {
             return "white";
+        } else if (colour == 0xFFFF9000) {
+            return "orange";
         } else {
             System.err.println("strange colour: " + String.format("0x%08X", colour));
             return "no colour found";

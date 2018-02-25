@@ -20,7 +20,7 @@ public class VertexFinder {
     private static int width = 0;
     private static int height = 0;
     private static final int STAIR_COST = 400;
-    private static final int LIFT_COST = 400;
+    private static final int LIFT_COST = 100000000;
     private static boolean STAIRS_OK = true;
 
     private static int LINE = 1;
@@ -93,6 +93,7 @@ public class VertexFinder {
         roomColour.put("darkgreen", "Accessible Toilet");
         roomColour.put("black", "Hall");
         roomColour.put("white", "Wall");
+        roomColour.put("orange", "Exit");
 
         HashMap<Vertex, Vertex> vertexMap = new HashMap<>(); // will store all the vertices
 
@@ -104,7 +105,7 @@ public class VertexFinder {
         int numVertices = 0;
 
         // Will be used to store vertices and edges adjacent to each vertex
-        HashMap<Pair<Integer, Integer>, Vertex> coordinateMap = new HashMap<>();
+//        HashMap<Pair<Integer, Integer>, Vertex> coordinateMap = new HashMap<>();
         HashMap<Vertex, HashSet<Edge>> adjList = new HashMap<>();
 
         // Get the the lines image (used for parsing in the map)
@@ -121,7 +122,7 @@ public class VertexFinder {
         assert (width == mapImages.get(0).getWidth());
         assert (height == mapImages.get(0).getHeight());
 
-        // level 0 == level 2; level 1 == level 3
+        // level 0 == level 1; level 1 == level 2; etc.
         for (int level = 0; level <= 1; level++) { // note that until we have floors 0 and 1, we'll be offset
 
             // Look through image and extract all vertices
@@ -141,7 +142,7 @@ public class VertexFinder {
                         if (!RoomType.isBlack(colourRGB)) { // it is a vertex
                             Vertex v = new Vertex(i, j, level);
                             vertexMap.put(v, v); // store in our set of vertices
-                            coordinateMap.put(new Pair(i, j), v);
+//                            coordinateMap.put(new Triple(i, j, level), v);
                             adjList.put(v, new HashSet<Edge>()); // make a new entry in our set of edges of this vertex
                             numVertices++;
 //                            System.out.println("vertex " + v + " has adjlist " + adjList.get(v));
@@ -237,7 +238,9 @@ public class VertexFinder {
                 assert(stairMap.keySet().contains(vertexColour));
                 for (Vertex w : stairMap.get(vertexColour)) {
                     if (!v.equals(w) && Math.abs(v.getZ() - w.getZ()) < 3) { // don't use stairs if floors are far apart
-                        adjList.get(v).add(new Edge(v, w, STAIR_COST));
+                        Edge stairEdge = new Edge(v, w, STAIR_COST);
+                        stairEdge.makeStairs();
+                        adjList.get(v).add(stairEdge);
 //                        System.out.println("added " + w + " to " + v);
                     }
                 }
@@ -284,7 +287,7 @@ public class VertexFinder {
             }
 
             if (autofill) {
-                v.addLabel("" + i);
+                v.addLabel("(" + v.getX() + "," + v.getY() + "," + v.getZ() + ")");
                 continue;
             }
 
@@ -312,19 +315,19 @@ public class VertexFinder {
         System.out.println("Saving results");
 
         ObjectOutputStream oos1 = new ObjectOutputStream(
-                new BufferedOutputStream(new FileOutputStream(prefix + "serialised/vertexSet2.ser")));
+                new BufferedOutputStream(new FileOutputStream(prefix + "serialised/vertexSet3.ser")));
         ObjectOutputStream oos2 = new ObjectOutputStream(
-                new BufferedOutputStream(new FileOutputStream(prefix + "serialised/adjList2.ser")));
-        ObjectOutputStream oos3 = new ObjectOutputStream(
-                new BufferedOutputStream(new FileOutputStream(prefix + "serialised/coordMap2.ser")));
+                new BufferedOutputStream(new FileOutputStream(prefix + "serialised/adjList3.ser")));
+//        ObjectOutputStream oos3 = new ObjectOutputStream(
+//                new BufferedOutputStream(new FileOutputStream(prefix + "serialised/coordMap3.ser")));
 
         oos1.writeObject(new HashSet(vertexMap.keySet()));
         oos2.writeObject(adjList);
-        oos3.writeObject(coordinateMap);
+//        oos3.writeObject(coordinateMap);
 
         oos1.flush();
         oos2.flush();
-        oos3.flush();
+//        oos3.flush();
 
 //            for (Integer j : stairMap.keySet()) {
 //                System.out.println("stairs: " + stairMap.get(j));

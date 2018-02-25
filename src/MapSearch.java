@@ -16,26 +16,35 @@ public class MapSearch {
     public MapSearch() throws IOException, ClassNotFoundException {
 
         // change this from "waytotheclinic" to "" if you have a different path
-        String prefix = "waytotheclinic/";
+        String prefix = "";
 
         ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream(
-                new FileInputStream(prefix + "serialised/vertexSet2.ser")));
-        ObjectInputStream ois1 = new ObjectInputStream(new BufferedInputStream(
-                new FileInputStream(prefix + "serialised/adjList2.ser")));
-        ObjectInputStream ois2 = new ObjectInputStream(new BufferedInputStream(
-                new FileInputStream(prefix + "serialised/coordMap2.ser")));
+                new FileInputStream(prefix + "serialised/vertexSet3.ser")));
+//        ObjectInputStream ois1 = new ObjectInputStream(new BufferedInputStream(
+//                new FileInputStream(prefix + "serialised/adjList2.ser")));
+//        ObjectInputStream ois2 = new ObjectInputStream(new BufferedInputStream(
+//                new FileInputStream(prefix + "serialised/coordMap2.ser")));
 
-        ObjectInputStream ois3 = new ObjectInputStream(new BufferedInputStream(
-                new FileInputStream(prefix + "serialised/coordMap3.ser")));
+//        ObjectInputStream ois3 = new ObjectInputStream(new BufferedInputStream(
+//                new FileInputStream(prefix + "serialised/coordMap3.ser")));
 
 //        HashSet<Vertex> vertexSet = (HashSet<Vertex>) ois.readObject();
 //        HashMap<Vertex, HashSet<Edge>> adjList = (HashMap<Vertex, HashSet<Edge>>) ois1.readObject();
-        HashMap<Pair<Integer, Integer>, Vertex> coordMap2 = (HashMap<Pair<Integer, Integer>, Vertex>) ois2.readObject();
-        HashMap<Pair<Integer, Integer>, Vertex> coordMap3 = (HashMap<Pair<Integer, Integer>, Vertex>) ois3.readObject();
 
-        Vertex start = coordMap2.get(new Pair(73, 331));
-        Vertex end = coordMap2.get(new Pair(683, 166));
-        List<Edge> path = getPath(start, end);
+        HashSet<Vertex> vertexSet = (HashSet<Vertex>) ois.readObject();
+        HashMap<Vertex, Vertex> vertexMap = new HashMap<>();
+        for (Vertex v : vertexSet) {
+            vertexMap.put(v, v);
+        }
+
+        System.out.println("vertexSet:" + vertexSet);
+        System.out.println("vertexMap:" + vertexMap);
+        System.out.println("start in map:" + vertexMap.containsKey(new Vertex(785, 241, 1)));
+//        HashMap<Pair<Integer, Integer>, Vertex> coordMap3 = (HashMap<Pair<Integer, Integer>, Vertex>) ois3.readObject();
+
+        Vertex start = vertexMap.get(new Vertex(785, 241, 1));
+        Vertex end = vertexMap.get(new Vertex(784, 225, 0));
+        List<Edge> path = getPath(start, end, false);
 
         System.out.println(path);
 
@@ -56,81 +65,90 @@ public class MapSearch {
         ArrayList<String> straightLabelList = new ArrayList<>();
         for (Edge e : path) {
 
-            double newAngle = e.getAngle();
-            assert(newAngle < 360 && newAngle >= 0);
-            assert(orientAngle < 360 && orientAngle >= 0);
-
-            double diffAngle = orientAngle - newAngle;
-
-            TurnType turnType;
-
-            if (Math.abs(diffAngle) == 180) {
-                turnType = TurnType.UTURN;
-            } else if (diffAngle < 0) {
-                turnType = TurnType.LEFT;
-            } else if (diffAngle > 0) {
-                turnType = TurnType.RIGHT;
+            if (e.getInVertex().getZ() != e.getOutVertex().getZ()) {
+                if (e.isStairs()) {
+                    directions.add("Take the stairs to level " + (e.getOutVertex().getZ() + 1));
+                } else {
+                    directions.add("Take the lift to level " + (e.getOutVertex().getZ() + 1));
+                }
             } else {
-                turnType = TurnType.STRAIGHT;
-            }
+
+                double newAngle = e.getAngle();
+                assert (newAngle < 360 && newAngle >= 0);
+                assert (orientAngle < 360 && orientAngle >= 0);
+
+                double diffAngle = orientAngle - newAngle;
+
+                TurnType turnType;
+
+                if (Math.abs(diffAngle) == 180) {
+                    turnType = TurnType.UTURN;
+                } else if (diffAngle < 0) {
+                    turnType = TurnType.LEFT;
+                } else if (diffAngle > 0) {
+                    turnType = TurnType.RIGHT;
+                } else {
+                    turnType = TurnType.STRAIGHT;
+                }
 
 //            System.err.println(turnType);
 
-            ArrayList<String> labels = e.getOutVertex().getLabels();
+                ArrayList<String> labels = e.getOutVertex().getLabels();
 
-            String placeName = (labels.size() > 0) ? labels.get(0) : "";
+                String placeName = (labels.size() > 0) ? labels.get(0) : "";
 
-            if (turnType != TurnType.STRAIGHT) {
-                // flush last instruction if needed
-                if (straightLabelList.size() > 0) {
-                    for (int i = 0; i < straightLabelList.size(); i++) {
-                        String label = straightLabelList.get(i);
-                        if (!label.equals("")) {
-                            if (i != straightLabelList.size() - 1) {
-                                textDirection += " past the " + label + ",";
-                            } else {
-                                textDirection += " towards the " + label;
+                if (turnType != TurnType.STRAIGHT) {
+                    // flush last instruction if needed
+                    if (straightLabelList.size() > 0) {
+                        for (int i = 0; i < straightLabelList.size(); i++) {
+                            String label = straightLabelList.get(i);
+                            if (!label.equals("")) {
+                                if (i != straightLabelList.size() - 1) {
+                                    textDirection += " past the " + label + ",";
+                                } else {
+                                    textDirection += " towards the " + label;
+                                }
                             }
                         }
+
+                        // remove trailing comma
+                        textDirection = textDirection.replaceAll(",$", "");
+
+                        directions.add(textDirection);
+
+                        straightLabelList.clear();
+                        assert (straightLabelList.size() == 0);
                     }
 
-                    // remove trailing comma
-                    textDirection = textDirection.replaceAll(",$", "");
+                    switch (turnType) {
+                        case UTURN:
+                            textDirection = "Turn around";
+                            break;
+
+                        case LEFT:
+                            textDirection = "Turn left";
+                            break;
+
+                        case RIGHT:
+                            textDirection = "Turn right";
+                            break;
+                    }
+
+                    if (!placeName.equals("")) {
+                        textDirection += " towards the " + placeName;
+                    }
 
                     directions.add(textDirection);
-
-                    straightLabelList.clear();
-                    assert (straightLabelList.size() == 0);
+                    textDirection = "";
+                } else {
+                    // if was straight, just add to list
+                    if (straightLabelList.size() == 0) textDirection = "Go straight";
+                    straightLabelList.add(placeName);
                 }
 
-                switch (turnType) {
-                    case UTURN:
-                        textDirection = "Turn around";
-                        break;
-
-                    case LEFT:
-                        textDirection = "Turn left";
-                        break;
-
-                    case RIGHT:
-                        textDirection = "Turn right";
-                        break;
-                }
-
-                if (!placeName.equals("")) {
-                    textDirection += " towards the " + placeName;
-                }
-
-                directions.add(textDirection);
-                textDirection = "";
-            } else {
-                // if was straight, just add to list
-                if (straightLabelList.size() == 0) textDirection = "Go straight";
-                straightLabelList.add(placeName);
+                // point towards new direction
+                orientAngle = newAngle;
             }
-
-            // point towards new direction
-            orientAngle = newAngle;
         }
 
         directions.add("You have arrived at your destination");
@@ -140,7 +158,7 @@ public class MapSearch {
     }
 
     // final list will be backwards
-    public List<Edge> getPath(Vertex start, Vertex end) {
+    public List<Edge> getPath(Vertex start, Vertex end, boolean noStairs) {
 
         HashSet<Vertex> closedSet = new HashSet<>();
 
@@ -174,6 +192,11 @@ public class MapSearch {
 //            System.out.println("Out Edges:" + current.getOutEdges());
             for (Edge adjEdge : current.getOutEdges()) {
 
+                // Are stairs allowed? If not, skip stair edges
+                if (noStairs && adjEdge.isStairs()) {
+                    continue;
+                }
+
                 Vertex neighbour = adjEdge.getOutVertex();
 //                System.out.println("current neigh: " + neighbour);
 
@@ -185,7 +208,7 @@ public class MapSearch {
                     openSet.add(neighbour);
                 }
 
-                int tentative_gScore = tryGet(current, gScore) + birdDistance(current, neighbour);
+                int tentative_gScore = tryGet(current, gScore) + adjEdge.getCost();
 
 //                System.out.println("neighbour: " + neighbour);
                 if (tentative_gScore >= tryGet(neighbour, gScore)) {
@@ -210,6 +233,8 @@ public class MapSearch {
     }
 
     public static int manhattanDistance(Vertex start, Vertex end) {
+        System.out.println("start:" + start);
+        System.out.println("end:" + end);
         return Math.abs(start.getX() - end.getX()) + Math.abs(start.getY() - end.getY());
     }
     public static int birdDistance(Vertex start, Vertex end) {
