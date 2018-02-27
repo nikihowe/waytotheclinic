@@ -91,6 +91,7 @@ public class VertexFinder {
         roomColour.put("yellow", "Stairs");
         roomColour.put("pink", "Food");
         roomColour.put("darkgreen", "Accessible Toilet");
+        roomColour.put("green", "Hall");
         roomColour.put("black", "Hall");
         roomColour.put("white", "Wall");
         roomColour.put("orange", "Exit");
@@ -285,7 +286,11 @@ public class VertexFinder {
         for (Vertex v : vertexMap.keySet()) {
             i++;
             if (!RoomType.isGrey(lineImages.get(v.getZ()).getRGB(v.getX(), v.getY()))) {
-                v.addLabel(roomColour.get(RoomType.getColour(lineImages.get(v.getZ()).getRGB(v.getX(), v.getY()))));
+                String colour = roomColour.get(RoomType.getColour(lineImages.get(v.getZ()).getRGB(v.getX(), v.getY())));
+                if (colour == null) {
+                    System.out.println(v);
+                }
+                v.addLabel(colour);
 //               continue; // go to the next node -> we actually want to be able to add additional labels
             }
 
@@ -343,7 +348,8 @@ public class VertexFinder {
         System.out.println("Done");
     }
 
-    private static void printResult(HashMap<Vertex, Vertex> vertexMap, HashMap<Vertex, HashSet<Edge>> adjList) {
+    private static void printResult(HashMap<Vertex, Vertex> vertexMap,
+                                    HashMap<Vertex, HashSet<Edge>> adjList) {
         System.out.println("Vertices: ");
         for (Vertex v : vertexMap.keySet()) {
             System.out.println(v);

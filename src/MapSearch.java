@@ -42,7 +42,8 @@ public class MapSearch {
 //        System.out.println("start in map:" + vertexMap.containsKey(new Vertex(785, 241, 1)));
 //        HashMap<Pair<Integer, Integer>, Vertex> coordMap3 = (HashMap<Pair<Integer, Integer>, Vertex>) ois3.readObject();
 
-        Vertex start = vertexMap.get(new Vertex(785, 241, 1));
+        Vertex start = vertexMap.get(new Vertex(250, 347, 1));
+//        Vertex start = vertexMap.get(new Vertex(784, 225, 0));
         Vertex end = vertexMap.get(new Vertex(784, 225, 0));
         List<Edge> path = getPath(start, end, false);
 
@@ -64,6 +65,11 @@ public class MapSearch {
         // add all places you walk past on a straight to the list
         ArrayList<String> straightLabelList = new ArrayList<>();
         for (Edge e : path) {
+
+            if (e == null) {
+                System.err.println("NULL VERTEX");
+                System.err.println(e);
+            }
 
             if (e.getInVertex().getZ() != e.getOutVertex().getZ()) {
                 if (e.isStairs()) {
@@ -94,8 +100,9 @@ public class MapSearch {
 //            System.err.println(turnType);
 
                 ArrayList<String> labels = e.getOutVertex().getLabels();
+//                System.err.println(labels);
 
-                String placeName = (labels.size() > 0) ? "" + labels : "";
+                String placeName = (labels.size() > 0) ? "" + labels.get(0) : "";
 
                 if (turnType != TurnType.STRAIGHT) {
                     // flush last instruction if needed
