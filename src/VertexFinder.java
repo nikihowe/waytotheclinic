@@ -35,7 +35,7 @@ public class VertexFinder {
             dotColour = 0xFF00FF00;
         } else if (mode == MAP){
             image = mapImages.get(z);
-            dotColour = 0xFFFF0000;
+            dotColour = lineImages.get(z).getRGB(x, y);
         } else {
             return null;
         }
@@ -79,9 +79,9 @@ public class VertexFinder {
         String prefix = "";
 
         String lineLocation2 = prefix + "Levels/Level2LinesCol.png";
-        String mapLocation2 = prefix + "Levels/crop2.png";
+        String mapLocation2 = prefix + "Levels/bitmap2.png";
         String lineLocation3 = prefix + "Levels/Level3LinesCol.png";
-        String mapLocation3 = prefix + "Levels/crop3.png";
+        String mapLocation3 = prefix + "Levels/bitmap3.png";
 
         // Colours corresponding to rooms
         HashMap<String, String> roomColour = new HashMap<>();
@@ -94,6 +94,8 @@ public class VertexFinder {
         roomColour.put("black", "Hall");
         roomColour.put("white", "Wall");
         roomColour.put("orange", "Exit");
+        roomColour.put("purple", "Cash Machine");
+        roomColour.put("lightblue", "Changing Table");
 
         HashMap<Vertex, Vertex> vertexMap = new HashMap<>(); // will store all the vertices
 
@@ -284,14 +286,14 @@ public class VertexFinder {
             i++;
             if (!RoomType.isGrey(lineImages.get(v.getZ()).getRGB(v.getX(), v.getY()))) {
                 v.addLabel(roomColour.get(RoomType.getColour(lineImages.get(v.getZ()).getRGB(v.getX(), v.getY()))));
-                continue; // go to the next node
+//               continue; // go to the next node -> we actually want to be able to add additional labels
             }
 
             if (autofill) {
-//                v.addLabel("(" + v.getX() + "," + v.getY() + "," + v.getZ() + ")");
-                v.addLabel("" + i++);
-                v.addLabel("" + i++);
-                v.addLabel("" + i++);
+                v.addLabel("~~" + v.getX() + "," + v.getY() + "," + v.getZ() + "~~");
+//                v.addLabel("" + i++);
+//                v.addLabel("" + i++);
+//                v.addLabel("" + i++);
                 continue;
             }
 
@@ -301,6 +303,7 @@ public class VertexFinder {
             String[] line = stdin.nextLine().split(",");
 
             if (line.length == 1 && line[0].equals("done")) break;
+            if (line.length == 1 && line[0].equals("autofill")) autofill = true;
 
             for (String label : line) {
                 label = label.trim();

@@ -8,10 +8,12 @@
 # Java class files
 *.class
 
-# Generated files
+# Generated files and old files
 bin/
 gen/
 out/
+serialised/
+old/
 
 # Gradle files
 .gradle/

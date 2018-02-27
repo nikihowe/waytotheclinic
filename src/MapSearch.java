@@ -159,6 +159,10 @@ public class MapSearch {
     // final list will be backwards
     public List<Edge> getPath(Vertex start, Vertex end, boolean noStairs) {
 
+        if (start.equals(end)) {
+            return new ArrayList<>();
+        }
+
         HashSet<Vertex> closedSet = new HashSet<>();
 
         HashSet<Vertex> openSet = new HashSet<>();
