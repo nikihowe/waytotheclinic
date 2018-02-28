@@ -2,6 +2,7 @@
 //import kotlin.Pair;
 import javafx.util.Pair;
 
+import javax.management.RuntimeErrorException;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowEvent;
@@ -10,6 +11,7 @@ import java.io.*;
 import java.util.*;
 import java.util.List;
 
+import static java.lang.Math.PI;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 
@@ -20,7 +22,7 @@ public class VertexFinder {
     private static int width = 0;
     private static int height = 0;
     private static final int STAIR_COST = 400;
-    private static final int LIFT_COST = 100000000;
+    private static final int LIFT_COST = 1000;
     private static boolean STAIRS_OK = true;
 
     private static int LINE = 1;
@@ -217,6 +219,9 @@ public class VertexFinder {
                     int pixelColour = lineImages.get(z).getRGB(checkX, checkY);
                     // We want to add an edge to the pixel at this location
                     if (RoomType.notBW(pixelColour)) {
+
+                        if (i <= 3) continue;
+
 //                        Vertex w = coordinateMap.get(new Pair(checkX, checkY));
                         Vertex w = vertexMap.get(new Vertex(checkX, checkY, z));
 //                        System.out.println("found vertex: " + w);
@@ -240,7 +245,7 @@ public class VertexFinder {
             if (RoomType.isYellow(vertexColour)) {
                 assert(stairMap.keySet().contains(vertexColour));
                 for (Vertex w : stairMap.get(vertexColour)) {
-                    if (!v.equals(w) && Math.abs(v.getZ() - w.getZ()) < 3) { // don't use stairs if floors are far apart
+                    if (!v.equals(w) && Math.abs(v.getZ() - w.getZ()) == 1) { // only add adjacent stair edges
                         Edge stairEdge = new Edge(v, w, STAIR_COST);
                         stairEdge.makeStairs();
                         adjList.get(v).add(stairEdge);
@@ -254,6 +259,8 @@ public class VertexFinder {
                 assert(liftMap.keySet().contains(vertexColour));
                 for (Vertex w : liftMap.get(vertexColour)) {
                     if (!v.equals(w)) {
+                        assert(v.getZ() - w.getZ() != 0);
+                        // check for teleportation bug
                         adjList.get(v).add(new Edge(v, w, LIFT_COST));
 //                        System.out.println("added " + w + " to " + v);
                     }
@@ -265,7 +272,7 @@ public class VertexFinder {
                 assert(diagonalMap.keySet().contains(vertexColour));
                 for (Vertex w : diagonalMap.get(vertexColour)) {
                     if (!v.equals(w)) {
-                        adjList.get(v).add(new Edge(v, w, euclidDistance(v, w)));
+                        adjList.get(v).add(new Edge(v, w, euclidDistance(v, w), polarAngle(v, w)));
 //                        System.out.println("added " + w + " to " + v);
                     }
                 }
@@ -386,6 +393,26 @@ public class VertexFinder {
             throw new RuntimeException("Expected vertices to be on same floor");
         } else {
             return (int) Math.sqrt( (v.getX()-w.getX())*(v.getX()-w.getX()) + (v.getY()-w.getY())*(v.getY()-w.getY()) );
+        }
+    }
+
+    public static double polarAngle(Vertex v, Vertex w) throws RuntimeErrorException {
+
+        /*
+
+        static double 	atan2(double y, double x)
+        Returns the angle theta from the conversion of rectangular coordinates (x, y) to polar coordinates (r, theta).
+
+        */
+
+        if (v.getZ() != w.getZ()) {
+            throw new RuntimeException("Expected vertices to be on same floor");
+        } else if (v.getX() == w.getX() && v.getY() == w.getY()) {
+            // just return 0 for same vertex
+            return 0.0;
+        } else {
+            // returns result in (-PI, PI] so need to convert to [0, 360)
+            return (Math.atan2(w.getY() - v.getY(), w.getX() - v.getX() + (2*PI)) / (2*PI) * 360) % 360;
         }
     }
 
