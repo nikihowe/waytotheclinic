@@ -80,10 +80,10 @@ public class VertexFinder {
         // change this from "waytotheclinic" to "" if you have a different path
         String prefix = "";
 
-        String lineLocation2 = prefix + "Levels/Level2LinesCol.png";
-        String mapLocation2 = prefix + "Levels/bitmap2.png";
-        String lineLocation3 = prefix + "Levels/Level3LinesCol.png";
-        String mapLocation3 = prefix + "Levels/bitmap3.png";
+        String lineLocation2 = prefix + "Levels/Level2FinalCol.png";
+        String mapLocation2 = prefix + "Levels/Level2MappingBitmap.png";
+        String lineLocation3 = prefix + "Levels/Level3FinalCol.png";
+        String mapLocation3 = prefix + "Levels/Level3MappingBitmap.png";
 
         // Colours corresponding to rooms
         HashMap<String, String> roomColour = new HashMap<>();
@@ -126,6 +126,7 @@ public class VertexFinder {
         height = lineImages.get(0).getHeight();
         assert (width == mapImages.get(0).getWidth());
         assert (height == mapImages.get(0).getHeight());
+        System.out.println("w, h: " + width + " " + height);
 
         // level 0 == level 1; level 1 == level 2; etc.
         for (int level = 0; level <= 1; level++) { // note that until we have floors 0 and 1, we'll be offset
@@ -259,6 +260,9 @@ public class VertexFinder {
                 assert(liftMap.keySet().contains(vertexColour));
                 for (Vertex w : liftMap.get(vertexColour)) {
                     if (!v.equals(w)) {
+                        if (v.getZ() - w.getZ() == 0) {
+                            System.err.println("transporting lift " + v + w);
+                        }
                         assert(v.getZ() - w.getZ() != 0);
                         // check for teleportation bug
                         adjList.get(v).add(new Edge(v, w, LIFT_COST));
@@ -278,9 +282,45 @@ public class VertexFinder {
                 }
             }
         }
-        System.out.println("Stair Map " + stairMap);
-        System.out.println("Lift Map " + liftMap);
-        System.out.println("Diagonal Map " + diagonalMap);
+        System.out.println("Stair Map: " + stairMap);
+        for (Integer i : stairMap.keySet()) {
+            int s = stairMap.get(i).size();
+            if (s == 1) {
+                System.err.println("Disconnected Stairs: " + stairMap.get(i));
+            } else if (s == 2) {
+                for (Vertex v : stairMap.get(i)) {
+                    for (Vertex w : stairMap.get(i)) {
+                        if (!v.equals(w)) {
+                            if (Math.abs(v.getX() - w.getX()) + Math.abs(v.getY() - w.getY()) > 8) {
+                                System.err.println("look into " + v + " " + w);
+                            }
+                        }
+                    }
+                }
+            } else {
+                System.err.println("Too many stairs: " + stairMap.get(i));
+            }
+        }
+        System.out.println("Lift Map: " + liftMap);
+        for (Integer i : liftMap.keySet()) {
+            int s = liftMap.get(i).size();
+            if (s == 1) {
+                System.err.println("Disconnected Lifts: " + liftMap.get(i));
+            } else if (s == 2) {
+                for (Vertex v : liftMap.get(i)) {
+                    for (Vertex w : liftMap.get(i)) {
+                        if (!v.equals(w)) {
+                            if (Math.abs(v.getX() - w.getX()) + Math.abs(v.getY() - w.getY()) > 8) {
+                                System.err.println("look into " + v + " " + w);
+                            }
+                        }
+                    }
+                }
+            } else {
+                System.err.println("Too many lifts: " + liftMap.get(i));
+            }
+        }
+        System.out.println("Diagonal Map Size:" + diagonalMap.size());
 
         // Used to get user input for the node labels
         Scanner stdin = new Scanner(System.in);
@@ -334,7 +374,7 @@ public class VertexFinder {
         System.out.println("Saving results");
 
         ObjectOutputStream oos1 = new ObjectOutputStream(
-                new BufferedOutputStream(new FileOutputStream(prefix + "serialised/vertexSet3.ser")));
+                new BufferedOutputStream(new FileOutputStream(prefix + "serialised/vertexSet.ser")));
 //        ObjectOutputStream oos2 = new ObjectOutputStream(
 //                new BufferedOutputStream(new FileOutputStream(prefix + "serialised/adjList3.ser")));
 //        ObjectOutputStream oos3 = new ObjectOutputStream(

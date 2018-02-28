@@ -19,7 +19,7 @@ public class RoomType {
             return "grey";
         } else if ((colour & 0xFFFFFF00) == 0xFFFF0000) {
             return "red";
-        } else if (colour == 0xFF002AFF) {
+        } else if (colour == 0xFF002AFF || colour == 0xFF0000FF) {
             return "blue";
         } else if ((colour & 0xFFFFFF00) == 0xFFFFFF00) { // any shade of yellow
             return "yellow";

@@ -19,7 +19,7 @@ public class MapSearch {
         String prefix = "";
 
         ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream(
-                new FileInputStream(prefix + "serialised/vertexSet3.ser")));
+                new FileInputStream(prefix + "serialised/vertexSet.ser")));
 //        ObjectInputStream ois1 = new ObjectInputStream(new BufferedInputStream(
 //                new FileInputStream(prefix + "serialised/adjList2.ser")));
 //        ObjectInputStream ois2 = new ObjectInputStream(new BufferedInputStream(
@@ -42,9 +42,9 @@ public class MapSearch {
 //        System.out.println("start in map:" + vertexMap.containsKey(new Vertex(785, 241, 1)));
 //        HashMap<Pair<Integer, Integer>, Vertex> coordMap3 = (HashMap<Pair<Integer, Integer>, Vertex>) ois3.readObject();
 
-        Vertex start = vertexMap.get(new Vertex(250, 347, 1));
+        Vertex start = vertexMap.get(new Vertex(416, 566, 1));
 //        Vertex start = vertexMap.get(new Vertex(784, 225, 0));
-        Vertex end = vertexMap.get(new Vertex(784, 225, 0));
+        Vertex end = vertexMap.get(new Vertex(707, 434, 0));
         List<Edge> path = getPath(start, end, false);
 
         System.out.println(path);
