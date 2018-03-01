@@ -408,9 +408,6 @@ public class VertexFinder {
             int y = v.getY();
             int z = v.getZ();
             int vertexColour = lineImages.get(z).getRGB(x, y);
-            if (vertexColour == 0xFF757575) {
-                System.err.println(v);
-            }
             String colour = roomColour.get(RoomType.getColour(lineImages.get(v.getZ()).getRGB(v.getX(), v.getY())));
 
             // Add in its colour-equivalent type (unless it's a standard node)

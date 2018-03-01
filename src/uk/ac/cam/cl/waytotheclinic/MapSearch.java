@@ -85,15 +85,16 @@ public class MapSearch {
                 assert (newAngle < 360 && newAngle >= 0);
                 assert (orientAngle < 360 && orientAngle >= 0);
 
-                double diffAngle = orientAngle - newAngle;
+                double diffAngle = (orientAngle - newAngle + 360) % 360;
+//                directions.add("diff:" + diffAngle);
 
                 TurnType turnType;
 
                 if (Math.abs(diffAngle) == 180) {
                     turnType = TurnType.UTURN;
-                } else if (diffAngle < 0) {
+                } else if (diffAngle == 270) {
                     turnType = TurnType.LEFT;
-                } else if (diffAngle > 0) {
+                } else if (diffAngle == 90) {
                     turnType = TurnType.RIGHT;
                 } else {
                     turnType = TurnType.STRAIGHT;
@@ -157,6 +158,7 @@ public class MapSearch {
 
                 // point towards new direction
                 orientAngle = newAngle;
+//                directions.add("current angle: " + orientAngle + "\n");
             }
         }
 
