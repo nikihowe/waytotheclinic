@@ -1,3 +1,5 @@
+package uk.ac.cam.cl.waytotheclinic;
+
 import java.io.Serializable;
 import java.util.*;
 
@@ -42,6 +44,7 @@ public class Vertex implements Serializable {
     @Override
     public String toString() {
         String str = labels.size() > 0 ? labels + " " : "";
+        str = "";
         return str + "(" + getX() + ", " + getY() + ", " + getZ() + ")";
 
     }

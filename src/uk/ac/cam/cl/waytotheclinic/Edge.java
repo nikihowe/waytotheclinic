@@ -1,3 +1,4 @@
+package uk.ac.cam.cl.waytotheclinic;
 import java.io.Serializable;
 import java.util.ArrayList;
 

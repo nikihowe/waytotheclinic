@@ -1,12 +1,13 @@
-import javafx.util.Pair;
+package uk.ac.cam.cl.waytotheclinic;
+
+//import javafx.util.Pair;
 
 //import kotlin.Pair;
 
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
+import java.io.*;
 import java.util.*;
+
+//import uk.ac.cam.cl.waytotheclinic.Help;
 
 public class MapSearch {
     public static void main(String[] args) throws IOException, ClassNotFoundException {
@@ -19,7 +20,7 @@ public class MapSearch {
         String prefix = "";
 
         ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream(
-                new FileInputStream(prefix + "serialised/vertexSet.ser")));
+                new FileInputStream(prefix + "serialised/vertexSetSave.ser")));
 //        ObjectInputStream ois1 = new ObjectInputStream(new BufferedInputStream(
 //                new FileInputStream(prefix + "serialised/adjList2.ser")));
 //        ObjectInputStream ois2 = new ObjectInputStream(new BufferedInputStream(
@@ -37,12 +38,34 @@ public class MapSearch {
             vertexMap.put(v, v);
         }
 
+        String output = "";
+
+        for (Vertex v : vertexSet) {
+            output += v + ":";
+            for (String s : v.getLabels()) {
+                if (!s.equals("")) {
+                    output += s + ",";
+                }
+            }
+            // Remove last comma
+            output = output.substring(0, output.length() - 1);
+            output += "\n";
+        }
+        System.out.println(output);
+
+//        ObjectOutputStream oos1 = new ObjectOutputStream(
+//                new BufferedOutputStream(new FileOutputStream(prefix + "serialised/vertexSetSave.ser")));
+//
+//        oos1.writeObject(vertexSet);
+//
+//        oos1.flush();
+
 //        System.out.println("vertexSet:" + vertexSet);
 //        System.out.println("vertexMap:" + vertexMap);
 //        System.out.println("start in map:" + vertexMap.containsKey(new Vertex(785, 241, 1)));
 //        HashMap<Pair<Integer, Integer>, Vertex> coordMap3 = (HashMap<Pair<Integer, Integer>, Vertex>) ois3.readObject();
 
-        Vertex start = vertexMap.get(new Vertex(416, 566, 1));
+        Vertex start = vertexMap.get(new Vertex(530, 477, 6));
 //        Vertex start = vertexMap.get(new Vertex(784, 225, 0));
         Vertex end = vertexMap.get(new Vertex(707, 434, 0));
         List<Edge> path = getPath(start, end, false);
@@ -165,6 +188,7 @@ public class MapSearch {
 
     // final list will be backwards
     public List<Edge> getPath(Vertex start, Vertex end, boolean noStairs) {
+        System.out.println("" + start + end);
 
         if (start.equals(end)) {
             return new ArrayList<>();

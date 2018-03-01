@@ -1,3 +1,5 @@
+package uk.ac.cam.cl.waytotheclinic;
+
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
