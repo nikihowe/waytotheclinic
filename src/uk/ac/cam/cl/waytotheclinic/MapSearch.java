@@ -281,4 +281,31 @@ public class MapSearch {
         }
         return totalPath;
     }
+
+    public static int twoDManhattan(Vertex v, Vertex w) {
+        int dx = Math.abs(v.getX() - w.getX());
+        int dy = Math.abs(v.getY() - w.getY());
+
+        return dy + dy;
+    }
+
+    
+    // floor is -1 indexed
+    public static Vertex getNearestVertex(double xd, double yd, int floor,
+                                          double squareSide, Map<Vertex, Vertex> vMap) {
+        int nearestX = (int) (xd * squareSide);
+        int nearestY = (int) (yd * squareSide);
+
+        Vertex touched = new Vertex(nearestX, nearestY, floor);
+
+        Vertex candidate = null;
+        int bestDistance = Integer.MAX_VALUE;
+        for (Vertex v : vMap.keySet()) {
+            if (twoDManhattan(touched, v) < bestDistance) {
+                candidate = v;
+                bestDistance = twoDManhattan(touched, v);
+            }
+        }
+        return candidate;
+    }
 }
