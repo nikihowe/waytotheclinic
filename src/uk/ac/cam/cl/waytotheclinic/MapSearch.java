@@ -41,7 +41,7 @@ public class MapSearch {
         Vertex end = vertexMap.get(new Vertex(707, 434, 0));
         List<Edge> path = getPath(start, end, false);
 
-//        System.out.println(path);
+        System.out.println(path);
 
         List<String> directions = getTextDirections(path);
 

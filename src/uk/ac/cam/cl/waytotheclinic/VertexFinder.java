@@ -85,7 +85,7 @@ public class VertexFinder {
         return clone;
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws Exception {
 
         // change this from "waytotheclinic" to "" if you have a different path
         String prefix = "";
@@ -404,9 +404,25 @@ public class VertexFinder {
 
         // Add in intersections for easier navigation
         for (Vertex v : vertexMap.keySet()) {
-            if (adjList.get(v).size() >= 3) {
-                v.addLabel("Intersection");
+            int x = v.getX();
+            int y = v.getY();
+            int z = v.getZ();
+            int vertexColour = lineImages.get(z).getRGB(x, y);
+            if (vertexColour == 0xFF757575) {
+                System.err.println(v);
             }
+            String colour = roomColour.get(RoomType.getColour(lineImages.get(v.getZ()).getRGB(v.getX(), v.getY())));
+
+            // Add in its colour-equivalent type (unless it's a standard node)
+            if (!RoomType.isGrey(vertexColour) && !v.getLabels().contains(colour)) {
+                v.addLabel(colour);
+            }
+
+            // If it's connected to three or more hallways and is not a lift or stairs, it's an intersection
+            if (adjList.get(v).size() >= 3 && !RoomType.isRed(vertexColour) && !RoomType.isYellow(vertexColour)) {
+                v.addLabel("Intersection " + v);
+            }
+
         }
 
         /**

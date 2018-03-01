@@ -16,7 +16,7 @@ public class RoomType {
     black - hallway
     white - wall
      */
-    public static String getColour(int colour) {
+    public static String getColour(int colour) throws Exception {
         if (colour == 0xFF808080) {
             return "grey";
         } else if ((colour & 0xFFFFFF00) == 0xFFFF0000) {
@@ -43,7 +43,7 @@ public class RoomType {
             return "purple";
         } else {
             System.err.println("strange colour: " + String.format("0x%08X", colour));
-            return "no colour found";
+            return "none";
         }
     }
 
