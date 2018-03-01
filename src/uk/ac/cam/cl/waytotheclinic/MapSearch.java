@@ -289,18 +289,22 @@ public class MapSearch {
         return dy + dy;
     }
 
-    
     // floor is -1 indexed
     public static Vertex getNearestVertex(double xd, double yd, int floor,
-                                          double squareSide, Map<Vertex, Vertex> vMap) {
-        int nearestX = (int) (xd * squareSide);
-        int nearestY = (int) (yd * squareSide);
+                                          double squareSideLength, Map<Vertex, Vertex> vMap) {
+        int nearestX = (int) (xd * squareSideLength);
+        int nearestY = (int) (yd * squareSideLength);
 
         Vertex touched = new Vertex(nearestX, nearestY, floor);
 
         Vertex candidate = null;
         int bestDistance = Integer.MAX_VALUE;
         for (Vertex v : vMap.keySet()) {
+            // Only consider it if they are on the same floor
+            if (v.getZ() != touched.getZ()) {
+                continue;
+            }
+
             if (twoDManhattan(touched, v) < bestDistance) {
                 candidate = v;
                 bestDistance = twoDManhattan(touched, v);
