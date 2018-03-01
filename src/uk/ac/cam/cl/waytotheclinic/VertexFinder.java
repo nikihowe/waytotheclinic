@@ -1,8 +1,6 @@
 package uk.ac.cam.cl.waytotheclinic;
 
 //import com.intellij.util.ui.UIUtil;
-//import kotlin.Pair;
-import javafx.util.Pair;
 
 import javax.management.RuntimeErrorException;
 import javax.swing.*;
@@ -25,7 +23,6 @@ public class VertexFinder {
     private static int height = 0;
     private static final int STAIR_COST = 400;
     private static final int LIFT_COST = 1000;
-    private static boolean STAIRS_OK = true;
 
     private static int LINE = 1;
     private static int MAP = 2;
@@ -109,7 +106,7 @@ public class VertexFinder {
         String lineLocation5 = prefix + "Levels/Level4FinalCol.png"; // same lines as 4
         String lineLocation6 = prefix + "Levels/Level6FinalCol.png";
         String lineLocation7 = prefix + "Levels/Level7FinalCol.png";
-        String lineLocation8 = prefix + "Levels/Level7FinalCol.png";
+        String lineLocation8 = prefix + "Levels/Level7FinalCol.png"; // same lines as 7
         String lineLocation9 = prefix + "Levels/Level7FinalCol.png";
         String lineLocation10 = prefix + "Levels/Level7FinalCol.png";
 
@@ -267,7 +264,8 @@ public class VertexFinder {
                     // We want to add an edge to the pixel at this location
                     if (RoomType.notBW(pixelColour)) {
 
-                        if (i <= 3) continue;
+                        // TODO: if we put this line in, the code breaks. What problem is this trying to solve?
+                        // if (i <= 3) continue;
 
 //                        Vertex w = coordinateMap.get(new Pair(checkX, checkY));
                         Vertex w = vertexMap.get(new Vertex(checkX, checkY, z));
@@ -404,6 +402,13 @@ public class VertexFinder {
             }
         }
 
+        // Add in intersections for easier navigation
+        for (Vertex v : vertexMap.keySet()) {
+            if (adjList.get(v).size() >= 3) {
+                v.addLabel("Intersection");
+            }
+        }
+
         /**
          i++;
          if (!RoomType.isGrey(lineImages.get(v.getZ()).getRGB(v.getX(), v.getY()))) {
@@ -451,18 +456,10 @@ public class VertexFinder {
 
         ObjectOutputStream oos1 = new ObjectOutputStream(
                 new BufferedOutputStream(new FileOutputStream(prefix + "serialised/vertexSetSave.ser")));
-        //        ObjectOutputStream oos2 = new ObjectOutputStream(
-        //                new BufferedOutputStream(new FileOutputStream(prefix + "serialised/adjList3.ser")));
-        //        ObjectOutputStream oos3 = new ObjectOutputStream(
-        //                new BufferedOutputStream(new FileOutputStream(prefix + "serialised/coordMap3.ser")));
 
         oos1.writeObject(new HashSet(vertexMap.keySet()));
-        //        oos2.writeObject(adjList);
-        //        oos3.writeObject(coordinateMap);
 
         oos1.flush();
-        //        oos2.flush();
-        //        oos3.flush();
 
         //            for (Integer j : stairMap.keySet()) {
         //                System.out.println("stairs: " + stairMap.get(j));

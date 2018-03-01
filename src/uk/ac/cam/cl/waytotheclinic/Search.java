@@ -1,11 +1,6 @@
 package uk.ac.cam.cl.waytotheclinic;
 
-import javafx.util.Pair;
-
-
-
 import java.io.*;
-
 import java.util.*;
 
 public class Search {

@@ -52,7 +52,7 @@
 (251, 495, 1)
 (878, 515, 0):Stairs
 (549, 477, 0)
-(431, 554, 0):Stairs,Recruitment
+(431, 554, 0):Recruitment,Stairs
 (339, 335, 0):Radiotherapy
 (862, 508, 1):ATC X-ray
 (878, 527, 0):Lift
@@ -66,7 +66,7 @@
 (585, 404, 1):Stairs
 (729, 548, 1):ACCI,inc GSK & Clinical Investigation Ward
 (252, 495, 1)
-(549, 505, 0):Stairs,E block
+(549, 505, 0):Stairs
 (448, 565, 1):Lift
 (846, 516, 1):Toilet
 (417, 504, 1):Hall
@@ -75,7 +75,7 @@
 (532, 527, 0):Toilet
 (339, 367, 0):Toilet
 (220, 473, 1):Accessible Toilet
-(549, 515, 0)
+(549, 515, 0):E block
 (401, 495, 1):Lift
 (320, 449, 0):Stairs
 (448, 577, 1):Stairs
@@ -98,7 +98,7 @@
 (440, 333, 1):R3 ward
 (847, 516, 1):Accessible Toilet
 (532, 554, 0)
-(416, 566, 1):Lift, Lab block
+(416, 566, 1):Lab block,Lift
 (339, 395, 0):Food
 (897, 506, 1):Clinic 33
 (287, 474, 1):Ultrasound
@@ -183,7 +183,7 @@
 (156, 529, 1):Clinic 7
 (256, 505, 0):Toilet
 (739, 380, 0):Lift
-(735, 506, 0):Stairs,Ramp
+(735, 506, 0):Ramp,Stairs
 (123, 534, 1)
 (339, 495, 0)
 (573, 409, 1):Hall
@@ -201,7 +201,7 @@
 (341, 449, 0):Toilet
 (341, 450, 1)
 (256, 526, 0):Clinic 1
-(409, 391, 0):Entrance,Wolfson Brain Imaging Centre
+(409, 391, 0):Wolfson Brain Imaging Centre,Entrance
 (738, 434, 1)
 (341, 454, 1):Lift
 (341, 455, 1):Stairs
@@ -309,7 +309,7 @@
 (596, 404, 1):J3 ward,J wards
 (278, 538, 1):Lift
 (164, 495, 1):Accessible Toilet
-(541, 587, 0):Entrance,Advice and information centre
+(541, 587, 0):Advice and Information Centre,Entrance
 (278, 549, 1):Nuclear medicine
 (572, 656, 0):Haematology Day Unit
 (339, 352, 0):Haematology
