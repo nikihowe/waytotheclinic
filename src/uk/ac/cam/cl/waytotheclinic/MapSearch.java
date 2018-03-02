@@ -4,6 +4,10 @@ import java.io.*;
 import java.util.*;
 
 public class MapSearch {
+
+    // Threshold for pixel location approximation when tapping a vertex
+    private static final int THRESHOLD = 40;
+
     public static void main(String[] args) throws IOException, ClassNotFoundException {
         new MapSearch();
     }
@@ -291,7 +295,8 @@ public class MapSearch {
 
     // floor is -1 indexed
     public static Vertex getNearestVertex(double xd, double yd, int floor,
-                                          double squareSideLength, Map<Vertex, Vertex> vMap) {
+                                          double squareSideLength, Map<Vertex, Vertex> vMap,
+                                          int THRESHOLD) {
         int nearestX = (int) (xd * squareSideLength);
         int nearestY = (int) (yd * squareSideLength);
 
@@ -305,11 +310,11 @@ public class MapSearch {
                 continue;
             }
 
-            if (twoDManhattan(touched, v) < bestDistance) {
+            if (twoDManhattan(touched, v) < bestDistance && twoDManhattan(touched, v) < THRESHOLD) {
                 candidate = v;
                 bestDistance = twoDManhattan(touched, v);
             }
         }
-        return candidate;
+        return bestDistance != Integer.MAX_VALUE ? candidate : null;
     }
 }
