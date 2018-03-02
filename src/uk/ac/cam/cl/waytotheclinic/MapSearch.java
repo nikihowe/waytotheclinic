@@ -72,7 +72,7 @@ public class MapSearch {
                     // Take the stairs to level 1             Take the stairs to level 3
                     // Take the stairs to level 2
                     // Take the stairs to level 3
-                    if (directions.get(directions.size() - 1).contains("Take the")) {
+                    if (directions.get(directions.size() - 1).contains("Take the stairs")) {
                         directions.remove(directions.size() - 1);
                     }
                     directions.add("Take the stairs to Level " + (e.getOutVertex().getZ() + 2));
@@ -92,9 +92,9 @@ public class MapSearch {
 
                 if (Math.abs(diffAngle) == 180) {
                     turnType = TurnType.UTURN;
-                } else if (diffAngle == 270) {
+                } else if (diffAngle > 180 && diffAngle < 360 && diffAngle == 270 ) {
                     turnType = TurnType.LEFT;
-                } else if (diffAngle == 90) {
+                } else if (diffAngle > 0 && diffAngle < 180 && diffAngle == 90) {
                     turnType = TurnType.RIGHT;
                 } else {
                     turnType = TurnType.STRAIGHT;
@@ -286,7 +286,7 @@ public class MapSearch {
         int dx = Math.abs(v.getX() - w.getX());
         int dy = Math.abs(v.getY() - w.getY());
 
-        return dy + dy;
+        return dx + dy;
     }
 
     // floor is -1 indexed
