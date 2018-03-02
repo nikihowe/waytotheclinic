@@ -3,6 +3,8 @@ package uk.ac.cam.cl.waytotheclinic;
 import java.io.*;
 import java.util.*;
 
+import static uk.ac.cam.cl.waytotheclinic.VertexComparator.ManhattanDistance2D;
+
 public class MapSearch {
     public static void main(String[] args) throws IOException, ClassNotFoundException {
         new MapSearch();
@@ -282,13 +284,6 @@ public class MapSearch {
         return totalPath;
     }
 
-    public static int twoDManhattan(Vertex v, Vertex w) {
-        int dx = Math.abs(v.getX() - w.getX());
-        int dy = Math.abs(v.getY() - w.getY());
-
-        return dx + dy;
-    }
-
     // floor is -1 indexed
     public static Vertex getNearestVertex(double xd, double yd, int floor,
                                           double squareSideLength, Map<Vertex, Vertex> vMap) {
@@ -305,9 +300,9 @@ public class MapSearch {
                 continue;
             }
 
-            if (twoDManhattan(touched, v) < bestDistance) {
+            if (ManhattanDistance2D(touched, v) < bestDistance) {
                 candidate = v;
-                bestDistance = twoDManhattan(touched, v);
+                bestDistance = ManhattanDistance2D(touched, v);
             }
         }
         return candidate;
