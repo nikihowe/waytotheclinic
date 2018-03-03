@@ -7,9 +7,6 @@ import static uk.ac.cam.cl.waytotheclinic.VertexComparator.ManhattanDistance2D;
 
 public class MapSearch {
 
-    // Threshold for pixel location approximation when tapping a vertex
-    private static final int THRESHOLD = 40;
-
     public static void main(String[] args) throws IOException, ClassNotFoundException {
         new MapSearch();
     }
@@ -20,7 +17,7 @@ public class MapSearch {
         String prefix = "";
 
         ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream(
-                new FileInputStream(prefix + "serialised/vertexSetSave.ser")));
+                new FileInputStream(prefix + "serialised/vertexSetFinal.ser")));
 
         HashSet<Vertex> vertexSet = (HashSet<Vertex>) ois.readObject();
         HashMap<Vertex, Vertex> vertexMap = new HashMap<>();
@@ -41,10 +38,9 @@ public class MapSearch {
             output = output.substring(0, output.length() - 1);
             output += "\n";
         }
-//        System.out.println(output);
 
-        Vertex start = vertexMap.get(new Vertex(530, 477, 3));
-        Vertex end = vertexMap.get(new Vertex(707, 434, 0));
+        Vertex start = vertexMap.get(new Vertex(171, 493, 0));
+        Vertex end = vertexMap.get(new Vertex(567, 477, 9));
         List<Edge> path = getPath(start, end, false);
 
         System.out.println(path);
@@ -71,70 +67,73 @@ public class MapSearch {
                 System.err.println(e);
             }
 
-            if (e.getInVertex().getZ() != e.getOutVertex().getZ()) {
-                if (e.isStairs()) {
-                    // Only add the last direction of where to take the stairs in this stairwell
-                    // This turns this                         into this
-                    // Take the stairs to level 1             Take the stairs to level 3
-                    // Take the stairs to level 2
-                    // Take the stairs to level 3
-                    if (directions.get(directions.size() - 1).contains("Take the stairs")) {
-                        directions.remove(directions.size() - 1);
-                    }
-                    directions.add("Take the stairs to Level " + (e.getOutVertex().getZ() + 2));
-                } else {
-                    directions.add("Take the lift to Level " + (e.getOutVertex().getZ() + 2));
-                }
+            System.err.println(e);
+
+            double newAngle = e.getAngle();
+            assert (newAngle < 360 && newAngle >= 0);
+            assert (orientAngle < 360 && orientAngle >= 0);
+
+            double diffAngle = (orientAngle - newAngle + 360) % 360;
+
+            TurnType turnType;
+
+            if (Math.abs(diffAngle) == 180) {
+                turnType = TurnType.UTURN;
+            } else if (diffAngle > 180 && diffAngle < 360 && diffAngle == 270 ) {
+                turnType = TurnType.LEFT;
+            } else if (diffAngle > 0 && diffAngle < 180 && diffAngle == 90) {
+                turnType = TurnType.RIGHT;
             } else {
+                turnType = TurnType.STRAIGHT;
+            }
 
-                double newAngle = e.getAngle();
-                assert (newAngle < 360 && newAngle >= 0);
-                assert (orientAngle < 360 && orientAngle >= 0);
+            ArrayList<String> labels = e.getOutVertex().getLabels();
 
-                double diffAngle = (orientAngle - newAngle + 360) % 360;
-//                directions.add("diff:" + diffAngle);
+            String placeName = (labels.size() > 0) ? "" + labels.get(0) : "";
 
-                TurnType turnType;
-
-                if (Math.abs(diffAngle) == 180) {
-                    turnType = TurnType.UTURN;
-                } else if (diffAngle > 180 && diffAngle < 360 && diffAngle == 270 ) {
-                    turnType = TurnType.LEFT;
-                } else if (diffAngle > 0 && diffAngle < 180 && diffAngle == 90) {
-                    turnType = TurnType.RIGHT;
-                } else {
-                    turnType = TurnType.STRAIGHT;
-                }
-
-//            System.err.println(turnType);
-
-                ArrayList<String> labels = e.getOutVertex().getLabels();
-//                System.err.println(labels);
-
-                String placeName = (labels.size() > 0) ? "" + labels.get(0) : "";
-
-                if (turnType != TurnType.STRAIGHT) {
-                    // flush last instruction if needed
-                    if (straightLabelList.size() > 0) {
-                        for (int i = 0; i < straightLabelList.size(); i++) {
-                            String label = straightLabelList.get(i);
-                            if (!label.equals("")) {
-                                if (i != straightLabelList.size() - 1) {
-                                    textDirection += " past the " + label + ",";
-                                } else {
-                                    textDirection += " towards the " + label;
-                                }
+            if (turnType == TurnType.STRAIGHT) {
+                // if was straight, just add to list
+                if (straightLabelList.size() == 0) textDirection = "Go straight";
+                straightLabelList.add(placeName);
+            } else {
+                // flush last instruction if needed
+                if (straightLabelList.size() > 0) {
+                    for (int i = 0; i < straightLabelList.size(); i++) {
+                        String label = straightLabelList.get(i);
+                        if (!label.equals("")) {
+                            if (i != straightLabelList.size() - 1) {
+                                textDirection += " past the " + label + ",";
+                            } else {
+                                textDirection += " towards the " + label;
                             }
                         }
-
-                        // remove trailing comma
-                        textDirection = textDirection.replaceAll(",$", "");
-
-                        directions.add(textDirection);
-
-                        straightLabelList.clear();
-                        assert (straightLabelList.size() == 0);
                     }
+
+                    // remove trailing comma
+                    textDirection = textDirection.replaceAll(",$", "");
+
+                    directions.add(textDirection);
+
+                    straightLabelList.clear();
+                    textDirection = "";
+                    assert (straightLabelList.size() == 0);
+                }
+
+                if (e.getInVertex().getZ() != e.getOutVertex().getZ()) {
+                    if (e.isStairs()) {
+                        // Only add the last direction of where to take the stairs in this stairwell
+                        // This turns this                         into this
+                        // Take the stairs to level 1             Take the stairs to level 3
+                        // Take the stairs to level 2
+                        // Take the stairs to level 3
+//                    if (directions.get(directions.size() - 1).contains("Take the stairs")) {
+//                        directions.remove(directions.size() - 1);
+//                    }
+                        directions.add("Take the stairs to Level " + (e.getOutVertex().getZ() + 1));
+                    } else {
+                        directions.add("Take the lift to Level " + (e.getOutVertex().getZ() + 1));
+                    }
+                } else {
 
                     switch (turnType) {
                         case UTURN:
@@ -156,16 +155,14 @@ public class MapSearch {
 
                     directions.add(textDirection);
                     textDirection = "";
-                } else {
-                    // if was straight, just add to list
-                    if (straightLabelList.size() == 0) textDirection = "Go straight";
-                    straightLabelList.add(placeName);
                 }
-
-                // point towards new direction
-                orientAngle = newAngle;
-//                directions.add("current angle: " + orientAngle + "\n");
             }
+
+            // point towards new direction
+            orientAngle = newAngle;
+//                directions.add("current angle: " + orientAngle + "\n");
+
+
         }
 
         directions.add("You have arrived at your destination");
@@ -175,7 +172,6 @@ public class MapSearch {
 
     // final list will be backwards
     public List<Edge> getPath(Vertex start, Vertex end, boolean noStairs) {
-//        System.out.println("" + start + end);
 
         if (start.equals(end)) {
             return new ArrayList<>();
@@ -193,13 +189,11 @@ public class MapSearch {
         gScore.put(start, 0);
 
         HashMap<Vertex, Integer> fScore = new HashMap<>();
-//        System.out.println("start: " + start + " end: " + end);
         fScore.put(start, VertexComparator.manhattanDistance(start, end));
 
         while (!openSet.isEmpty()) {
             // From Wikipedia
             Vertex current = pickBestNext(openSet, fScore);
-//            System.out.println("next best: " + current);
 
             if (current.samePlaceAs(end)) {
                 List<Edge> toRet = reconstructEdgePath(cameFrom, cameFromEdge, current);
@@ -210,7 +204,6 @@ public class MapSearch {
             openSet.remove(current);
             closedSet.add(current);
 
-//            System.out.println("Out Edges:" + current.getOutEdges());
             for (Edge adjEdge : current.getOutEdges()) {
 
                 // Are stairs allowed? If not, skip stair edges
@@ -219,7 +212,6 @@ public class MapSearch {
                 }
 
                 Vertex neighbour = adjEdge.getOutVertex();
-//                System.out.println("current neigh: " + neighbour);
 
                 if (closedSet.contains(neighbour)) {
                     continue;
@@ -231,13 +223,11 @@ public class MapSearch {
 
                 int tentative_gScore = tryGet(current, gScore) + adjEdge.getCost();
 
-//                System.out.println("neighbour: " + neighbour);
                 if (tentative_gScore >= tryGet(neighbour, gScore)) {
                     continue;
                 }
 
                 // This path is the best until now
-//                System.out.println("" + neighbour + current + tentative_gScore);
                 cameFrom.put(neighbour, current);
                 cameFromEdge.put(neighbour, adjEdge);
                 gScore.put(neighbour, tentative_gScore);
@@ -265,17 +255,6 @@ public class MapSearch {
         return toReturn;
     }
 
-    public List<Vertex> reconstructPath(HashMap<Vertex, Vertex> cameFrom, Vertex current) {
-        List<Vertex> totalPath = new ArrayList<>();
-        totalPath.add(current);
-
-        while (cameFrom.keySet().contains(current)) {
-            current = cameFrom.get(current);
-            totalPath.add(current);
-        }
-        return totalPath;
-    }
-
     public List<Edge> reconstructEdgePath(HashMap<Vertex, Vertex> cameFrom,
                                           HashMap<Vertex, Edge> cameFromEdge, Vertex current) {
         List<Edge> totalPath = new ArrayList<>();
@@ -292,7 +271,7 @@ public class MapSearch {
         return Math.abs(v.getX() - w.getX()) + Math.abs(v.getY() - w.getY());
     }
 
-    // floor is -1 indexed
+    // floor is 0 indexed
     public static Vertex getNearestVertex(double xd, double yd, int floor,
                                           double squareSideLength, Map<Vertex, Vertex> vMap,
                                           int THRESHOLD) {

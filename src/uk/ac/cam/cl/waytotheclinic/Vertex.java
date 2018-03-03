@@ -10,12 +10,10 @@ public class Vertex implements Serializable {
     private Set<Vertex> adjacentVertices;
     private int x;
     private int y;
-    private int z; // which level we're on
-    private boolean intersection = false;
+    private int z; // which level we're on (z = 0 means we're on level 1)
     private ArrayList<String> labels;
     private ArrayList<Edge> inEdges;
     private ArrayList<Edge> outEdges;
-
 
     public Vertex(int x, int y, int z) {
         this.x = x;
@@ -72,10 +70,6 @@ public class Vertex implements Serializable {
     public boolean samePlaceAs(Vertex other) {
         return x == other.getX() && y == other.getY() && z == other.getZ();
     }
-
-    public void setIntersection() { intersection = true;  }
-
-    public boolean isIntersection() { return intersection; }
 
     public void addLabel(String label) { labels.add(label); }
 

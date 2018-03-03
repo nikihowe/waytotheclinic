@@ -3,20 +3,21 @@ package uk.ac.cam.cl.waytotheclinic;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 
 public class RoomType {
 
     /**
-    blue - toilets
-    green - accessible toilets
-    yellow - stairs
-    red - lift
-    grey - node
-    pink - food
-    black - hallway
-    white - wall
+     * blue - toilets
+     * green - accessible toilets
+     * yellow - stairs
+     * red - lift
+     * grey - node
+     * pink - food
+     * black - hallway
+     * white - wall
      */
-    public static String getColour(int colour) throws Exception {
+    public static String getColour(int colour) {
         if (colour == 0xFF808080) {
             return "grey";
         } else if ((colour & 0xFFFFFF00) == 0xFFFF0000) {
@@ -43,7 +44,39 @@ public class RoomType {
             return "purple";
         } else {
             System.err.println("strange colour: " + String.format("0x%08X", colour));
-            return "none";
+            return null;
+        }
+    }
+
+    // Colours corresponding to rooms
+    public static String getVertexType(int colourRGB) {
+        String colour = getColour(colourRGB);
+
+        if (colour.equals("grey")) {
+            return "Node";
+        } else if (colour.equals("red")) {
+            return "Lift";
+        } else if (colour.equals("blue")) {
+            return "Toilet";
+        } else if (colour.equals("yellow")) {
+            return "Stairs";
+        } else if (colour.equals("pink")) {
+            return "Food";
+        } else if (colour.equals("darkgreen")) {
+            return "Accessible Toilet";
+        } else if (colour.equals("green")) {
+            return "Hall";
+        } else if (colour.equals("black")) {
+            return "Hall";
+        } else if (colour.equals("white")) {
+            return "Wall";
+        } else if (colour.equals("orange")) {
+            return "Entrance";
+        } else if (colour.equals("purple")) {
+            return "Cash Machine";
+        } else {
+            System.err.println("strange colour: " + String.format("0x%08X", colour));
+            return null;
         }
     }
 
@@ -75,7 +108,7 @@ public class RoomType {
         return (colour & 0xFFFFFF00) == 0xFF00FF00;
     }
 
-    /** For testing only */
+    /** For testing */
     public static void main(String[] args) throws IOException {
         BufferedImage myImage = javax.imageio.ImageIO.read(new File("Levels/eight.png"));
         for (int i = 0; i < myImage.getWidth(); i++) {

@@ -378,3 +378,4 @@
 (741, 363, 0):Information
 (728, 347, 0):Chestnut House
 (752, 347, 0):Rosie Birth Centre
+(741, 421, 0):Baby Changing Table
