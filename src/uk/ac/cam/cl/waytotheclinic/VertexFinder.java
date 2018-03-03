@@ -90,6 +90,7 @@ public class VertexFinder {
         // change this from "waytotheclinic" to "" if you have a different path
         String prefix = "";
 
+        String mapLocation1 = prefix + "Levels/Level1MappingBitmap.png";
         String mapLocation2 = prefix + "Levels/Level2MappingBitmap.png";
         String mapLocation3 = prefix + "Levels/Level3MappingBitmap.png";
         String mapLocation4 = prefix + "Levels/Level3MappingBitmap.png"; // same map as 3
@@ -100,6 +101,8 @@ public class VertexFinder {
         String mapLocation9 = prefix + "Levels/Level3MappingBitmap.png";
         String mapLocation10 = prefix + "Levels/Level3MappingBitmap.png";
 
+
+        String lineLocation1 = prefix + "Levels/Level1FinalCol.png";
         String lineLocation2 = prefix + "Levels/Level2FinalCol.png";
         String lineLocation3 = prefix + "Levels/Level3FinalCol.png";
         String lineLocation4 = prefix + "Levels/Level4FinalCol.png";
@@ -142,6 +145,7 @@ public class VertexFinder {
         // Get the the lines image (used for parsing in the map)
         // and the actual image (used for asking to label nodes)
         // All images must be the same size
+        lineImages.add(javax.imageio.ImageIO.read(new File(lineLocation1)));
         lineImages.add(javax.imageio.ImageIO.read(new File(lineLocation2)));
         lineImages.add(javax.imageio.ImageIO.read(new File(lineLocation3)));
         lineImages.add(javax.imageio.ImageIO.read(new File(lineLocation4)));
@@ -152,6 +156,7 @@ public class VertexFinder {
         lineImages.add(javax.imageio.ImageIO.read(new File(lineLocation9)));
         lineImages.add(javax.imageio.ImageIO.read(new File(lineLocation10)));
 
+        mapImages.add(javax.imageio.ImageIO.read(new File(mapLocation1)));
         mapImages.add(javax.imageio.ImageIO.read(new File(mapLocation2)));
         mapImages.add(javax.imageio.ImageIO.read(new File(mapLocation3)));
         mapImages.add(javax.imageio.ImageIO.read(new File(mapLocation4)));
@@ -171,8 +176,8 @@ public class VertexFinder {
         assert (height == mapImages.get(1).getHeight());
         System.out.println("w, h: " + width + " " + height);
 
-        // 0 == level 2; 1 == level 2; etc.
-        for (int level = 0; level <= 8; level++) { // note that until we have floors 0 and 1, we'll be offset
+        // 0 == level 1; 1 == level 2; etc.
+        for (int level = 0; level <= 9; level++) { // note that until we have floors 0 and 1, we'll be offset
 
             // Look through image and extract all vertices
             for (int i = 0; i < width; i++) { // for each pixel
@@ -417,9 +422,8 @@ public class VertexFinder {
 
             // If it's connected to three or more hallways and is not a lift or stairs, it's an intersection
             if (adjList.get(v).size() >= 3 && !RoomType.isRed(vertexColour) && !RoomType.isYellow(vertexColour)) {
-                v.addLabel("Intersection " + v);
+                v.addLabel("Intersection");
             }
-
         }
 
         /**
@@ -467,8 +471,14 @@ public class VertexFinder {
          System.out.println("Saving results");
          */
 
+        for (Vertex v : vertexMap.keySet()) {
+            if (v.getZ() == 0) {
+                System.out.println(v.getLabels());
+            }
+        }
+
         ObjectOutputStream oos1 = new ObjectOutputStream(
-                new BufferedOutputStream(new FileOutputStream(prefix + "serialised/vertexSetSave.ser")));
+                new BufferedOutputStream(new FileOutputStream(prefix + "serialised/vertexSetBleh.ser")));
 
         oos1.writeObject(new HashSet(vertexMap.keySet()));
 
