@@ -13,6 +13,12 @@ import static java.lang.Math.PI;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 
+/*
+    This class is used to go from a set of .png images (located in the Levels directory)
+    to a serialised HashMap<Vertex>.
+
+
+ */
 public class VertexFinder {
 
     private static List<BufferedImage> lineImages = new ArrayList<>();
@@ -71,7 +77,7 @@ public class VertexFinder {
         loadVertices(bitMaps, lineImgs);
         loadEdges();
         loadLabels(true);
-        saveSerialised("serialised/vertexSetFinal.ser");
+        saveSerialised("Serialised/vertexSetFinal.ser");
     }
 
     private static void loadVertices(List<File> bitMapImageList, List<File> lineImageList) throws IOException {
@@ -79,6 +85,7 @@ public class VertexFinder {
         System.out.println("Loading vertices from line maps");
         // Get the bitmap to display when labelling vertices
         // NOTE: all images must be the same size
+
         for (File img : bitMapImageList) {
             mapImages.add(javax.imageio.ImageIO.read(img));
         }
@@ -86,17 +93,16 @@ public class VertexFinder {
         for (File img : lineImageList) {
             lineImages.add(javax.imageio.ImageIO.read(img));
         }
+        assert (mapImages.get(1).getWidth() == mapImages.get(0).getWidth());
+        assert (mapImages.get(1).getHeight() == mapImages.get(0).getHeight());
+        assert (lineImages.size() == mapImages.size());
 
         // Load in image dimensions (both images will have same dimensions)
         width = lineImages.get(0).getWidth();
         height = lineImages.get(0).getHeight();
-        assert (width == mapImages.get(0).getWidth());
-        assert (width == mapImages.get(1).getWidth());
-        assert (height == mapImages.get(0).getHeight());
-        assert (height == mapImages.get(1).getHeight());
 
         // zero indexed, so 0 == level 1, 1 == level 2, etc.
-        for (int level = 0; level <= 9; level++) {
+        for (int level = 0; level < lineImages.size(); level++) {
 
             // Look through image and extract all vertices
             for (int i = 0; i < width; i++) { // for each pixel
@@ -281,7 +287,7 @@ public class VertexFinder {
         Scanner stdin = new Scanner(System.in);
 
         if (loadLabelsFromFile) {
-            try (BufferedReader br = new BufferedReader(new FileReader(new File("labels.txt")))) {
+            try (BufferedReader br = new BufferedReader(new FileReader(new File("Labels/labels.txt")))) {
                 String line;
                 while ((line = br.readLine()) != null) {
                     if (line.contains(":")) { // only get label if label exists!
@@ -327,7 +333,8 @@ public class VertexFinder {
         } else {
             System.out.println("Manual labelling selected. Type 'done' to stop labelling.");
             System.out.println("Food Locations, Stairs, Lifts, Toilets, Accessible Toilets," +
-                    "Entrances, Intersections, and Cash Machines will be added automatically");
+                    "Entrances, Intersections, and Cash Machines will automatically be given" +
+                    "labels in addition to those you provide (duplicates will automatically be removed");
             System.out.println();
 
             for (Vertex v : vertexMap.keySet()) {
@@ -467,7 +474,6 @@ public class VertexFinder {
 
         BufferedImage subImage = image.getSubimage(sX, sY, cropWidth, cropHeight);
         ImageIcon icon = new ImageIcon(deepCopy(subImage));
-
 
         JLabel label = new JLabel(icon);
         frame.add(label);

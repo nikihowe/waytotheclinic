@@ -3,6 +3,7 @@ package uk.ac.cam.cl.waytotheclinic;
 import java.io.Serializable;
 import java.util.*;
 
+// Same Vertex class as in Android project
 public class Vertex implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -10,7 +11,7 @@ public class Vertex implements Serializable {
     private Set<Vertex> adjacentVertices;
     private int x;
     private int y;
-    private int z; // which level we're on (z = 0 means we're on level 1)
+    private int z; // which level we're on, zero-indexed (z = 0 means we're on level 1)
     private ArrayList<String> labels;
     private ArrayList<Edge> inEdges;
     private ArrayList<Edge> outEdges;
@@ -41,10 +42,7 @@ public class Vertex implements Serializable {
 
     @Override
     public String toString() {
-        String str = labels.size() > 0 ? labels + " " : "";
-        str = "";
-        return str + "(" + getX() + ", " + getY() + ", " + getZ() + ")";
-
+        return "(" + getX() + ", " + getY() + ", " + getZ() + ")";
     }
 
     public int getX() { return x; }

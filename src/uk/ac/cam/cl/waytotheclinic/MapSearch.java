@@ -5,6 +5,8 @@ import java.util.*;
 
 import static uk.ac.cam.cl.waytotheclinic.VertexComparator.ManhattanDistance2D;
 
+// All pathfinding code in the Android project uses code taken from here.
+// MapSearch can be used for testing where testing directly on the app would be tedious.
 public class MapSearch {
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
@@ -13,20 +15,25 @@ public class MapSearch {
 
     public MapSearch() throws IOException, ClassNotFoundException {
 
-        // change this from "waytotheclinic" to "" if you have a different path
+        List<String> a = new ArrayList<>();
+
+        // Change this to the path to the parent folder containing /src
         String prefix = "";
 
         ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream(
-                new FileInputStream(prefix + "serialised/vertexSetFinal.ser")));
+                new FileInputStream(prefix + "Serialised/vertexSetFinal.ser")));
 
         HashSet<Vertex> vertexSet = (HashSet<Vertex>) ois.readObject();
         HashMap<Vertex, Vertex> vertexMap = new HashMap<>();
+        // Turn the vertexSet into a searchable vertexMap
         for (Vertex v : vertexSet) {
             vertexMap.put(v, v);
         }
 
         String output = "";
 
+        // Print out all the vertex information
+        // (can copy this output to make a new labels.txt file)
         for (Vertex v : vertexSet) {
             output += v + ":";
             for (String s : v.getLabels()) {
@@ -38,9 +45,12 @@ public class MapSearch {
             output = output.substring(0, output.length() - 1);
             output += "\n";
         }
+        System.out.println(output);
 
-        Vertex start = vertexMap.get(new Vertex(171, 493, 0));
-        Vertex end = vertexMap.get(new Vertex(567, 477, 9));
+        // Can test pathmaking between any two vertices
+        // Can look at LevelXFinalCol.png files to know exact pixel locations
+        Vertex start = vertexMap.get(new Vertex(118, 494, 1));
+        Vertex end = vertexMap.get(new Vertex(288, 471, 1));
         List<Edge> path = getPath(start, end, false);
 
         System.out.println(path);
@@ -52,88 +62,86 @@ public class MapSearch {
         }
     }
 
+    // This is what the PathFinder class in the Android project was developed from,
+    // and is still useful for testing new features/edits before pushing them
+    // to the Android build
     public static List<String> getTextDirections(List<Edge> path) {
         ArrayList<String> directions = new ArrayList<>();
 
-        double orientAngle = path.size() > 0 ? path.get(0).getAngle() : 0;
+        double orientAngle = path != null && path.size() > 0 ? path.get(0).getAngle() : 0;
 
         String textDirection = "";
+
         // add all places you walk past on a straight to the list
         ArrayList<String> straightLabelList = new ArrayList<>();
+
         for (Edge e : path) {
+//            System.out.println(directions);
+//            System.out.println("tt:" + textDirection);
+//            System.err.println("each:"+textDirection);
 
-            if (e == null) {
-                System.err.println("NULL VERTEX");
-                System.err.println(e);
-            }
+            // If it's stairs of lift then say so
+            if (e.getInVertex().getZ() != e.getOutVertex().getZ()) {
 
-            System.err.println(e);
-
-            double newAngle = e.getAngle();
-            assert (newAngle < 360 && newAngle >= 0);
-            assert (orientAngle < 360 && orientAngle >= 0);
-
-            double diffAngle = (orientAngle - newAngle + 360) % 360;
-
-            TurnType turnType;
-
-            if (Math.abs(diffAngle) == 180) {
-                turnType = TurnType.UTURN;
-            } else if (diffAngle > 180 && diffAngle < 360 && diffAngle == 270 ) {
-                turnType = TurnType.LEFT;
-            } else if (diffAngle > 0 && diffAngle < 180 && diffAngle == 90) {
-                turnType = TurnType.RIGHT;
-            } else {
-                turnType = TurnType.STRAIGHT;
-            }
-
-            ArrayList<String> labels = e.getOutVertex().getLabels();
-
-            String placeName = (labels.size() > 0) ? "" + labels.get(0) : "";
-
-            if (turnType == TurnType.STRAIGHT) {
-                // if was straight, just add to list
-                if (straightLabelList.size() == 0) textDirection = "Go straight";
-                straightLabelList.add(placeName);
-            } else {
-                // flush last instruction if needed
-                if (straightLabelList.size() > 0) {
-                    for (int i = 0; i < straightLabelList.size(); i++) {
-                        String label = straightLabelList.get(i);
-                        if (!label.equals("")) {
-                            if (i != straightLabelList.size() - 1) {
-                                textDirection += " past the " + label + ",";
-                            } else {
-                                textDirection += " towards the " + label;
-                            }
-                        }
-                    }
-
-                    // remove trailing comma
-                    textDirection = textDirection.replaceAll(",$", "");
-
+                if (!(flushStraightLabelList(straightLabelList).equals("") && textDirection == "")) {
+                    textDirection += flushStraightLabelList(straightLabelList);
+                    System.err.println(textDirection);
                     directions.add(textDirection);
-
-                    straightLabelList.clear();
                     textDirection = "";
-                    assert (straightLabelList.size() == 0);
+                    straightLabelList.clear();
+                    assert(straightLabelList.size() == 0);
                 }
 
-                if (e.getInVertex().getZ() != e.getOutVertex().getZ()) {
-                    if (e.isStairs()) {
-                        // Only add the last direction of where to take the stairs in this stairwell
-                        // This turns this                         into this
-                        // Take the stairs to level 1             Take the stairs to level 3
-                        // Take the stairs to level 2
-                        // Take the stairs to level 3
-//                    if (directions.get(directions.size() - 1).contains("Take the stairs")) {
-//                        directions.remove(directions.size() - 1);
-//                    }
-                        directions.add("Take the stairs to Level " + (e.getOutVertex().getZ() + 1));
-                    } else {
-                        directions.add("Take the lift to Level " + (e.getOutVertex().getZ() + 1));
+                if (e.isStairs()) {
+                    // Only add the last direction of where to take the stairs in this stairwell
+                    // This turns this                         into this
+                    // Take the stairs to level 1             Take the stairs to level 3
+                    // Take the stairs to level 2
+                    // Take the stairs to level 3
+                    if (directions.get(directions.size() - 1).contains("Take the stairs")) {
+                        directions.remove(directions.size() - 1);
                     }
+                    directions.add("Take the stairs to level " + (e.getOutVertex().getZ() + 1));
                 } else {
+                    directions.add("Take the lift to level " + (e.getOutVertex().getZ() + 1));
+                }
+
+            } else {
+
+                double newAngle = e.getAngle();
+                assert (newAngle < 360 && newAngle >= 0);
+                assert (orientAngle < 360 && orientAngle >= 0);
+
+                double diffAngle = (orientAngle - newAngle + 360) % 360;
+
+                TurnType turnType;
+
+                if (Math.abs(diffAngle) == 180) {
+                    turnType = TurnType.UTURN;
+                } else if (diffAngle > 180 && diffAngle < 360) {
+                    turnType = TurnType.LEFT;
+                } else if (diffAngle > 0 && diffAngle < 180) {
+                    turnType = TurnType.RIGHT;
+                } else {
+                    turnType = TurnType.STRAIGHT;
+                }
+//                System.err.println(turnType);
+
+                ArrayList<String> labels = e.getOutVertex().getLabels();
+
+                String placeName = (labels.size() > 0) ? labels.get(0) : "";
+
+                if (turnType != TurnType.STRAIGHT) {
+//                    System.out.println("not straight: " + straightLabelList);
+
+                    if (!(flushStraightLabelList(straightLabelList).equals("") && textDirection == "")) {
+//                        System.err.println("not straight:" + textDirection);
+                        textDirection += flushStraightLabelList(straightLabelList);
+                        directions.add(textDirection);
+                        textDirection = "";
+                        straightLabelList.clear();
+                        assert (straightLabelList.size() == 0);
+                    }
 
                     switch (turnType) {
                         case UTURN:
@@ -155,14 +163,24 @@ public class MapSearch {
 
                     directions.add(textDirection);
                     textDirection = "";
+
+                } else { // if was straight, just add to list
+
+                    if (straightLabelList.size() == 0) {
+//                        System.out.println("got here");
+                        textDirection = "Go straight";
+                    }
+                    straightLabelList.add(placeName);
                 }
+
+                // point towards new direction
+                orientAngle = newAngle;
             }
 
-            // point towards new direction
-            orientAngle = newAngle;
-//                directions.add("current angle: " + orientAngle + "\n");
+        }
 
-
+        if (!flushStraightLabelList(straightLabelList).equals("")) {
+            directions.add("Go straight" + flushStraightLabelList(straightLabelList));
         }
 
         directions.add("You have arrived at your destination");
@@ -170,7 +188,33 @@ public class MapSearch {
         return directions;
     }
 
-    // final list will be backwards
+    // Return the directions stored in the straightLabelList. Same as in Android project.
+    private static String flushStraightLabelList(List<String> straightLabelList) {
+
+        String textDirection = "";
+        // flush last instruction if needed
+        if (straightLabelList.size() > 0) {
+            for (int i = 0; i < straightLabelList.size(); i++) {
+                String label = straightLabelList.get(i);
+                if (label != null && !label.equals("")) {
+                    if (i != straightLabelList.size() - 1) {
+                        textDirection += " past the " + label + ",";
+                    } else {
+                        textDirection += " towards the " + label;
+                    }
+                }
+            }
+
+            // remove trailing comma
+            textDirection = textDirection.replaceAll(",$", "");
+
+        }
+        return textDirection;
+
+    }
+
+    // Get a list of edges representing the path between nodes start and end.
+    // Same as in the Android project.
     public List<Edge> getPath(Vertex start, Vertex end, boolean noStairs) {
 
         if (start.equals(end)) {
@@ -271,7 +315,6 @@ public class MapSearch {
         return Math.abs(v.getX() - w.getX()) + Math.abs(v.getY() - w.getY());
     }
 
-    // floor is 0 indexed
     public static Vertex getNearestVertex(double xd, double yd, int floor,
                                           double squareSideLength, Map<Vertex, Vertex> vMap,
                                           int THRESHOLD) {
